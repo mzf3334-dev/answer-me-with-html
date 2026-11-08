@@ -25,7 +25,7 @@ git checkout -B zh-tw upstream/main
 git checkout "origin/zh-tw" -- scripts/zh-tw 2>/dev/null || true
 # The Traditional-Chinese doc images are generated on zh-tw (regen-images.mjs);
 # carry them over too, or the rebuild would restore upstream's Simplified ones.
-git checkout "origin/zh-tw" -- docs/images/tcp.png docs/images/architecture-dark.png docs/images/video-zh.png docs/images/text-vs-page-zh.png 2>/dev/null || true
+git checkout "origin/zh-tw" -- docs/images/tcp.png docs/images/architecture-dark.png docs/images/video-zh.png docs/images/text-vs-page-zh.png docs/images/og-en.jpg docs/images/og-zh.jpg 2>/dev/null || true
 export PATH="$PWD/node_modules/.bin:$PATH"
 command -v opencc-cli >/dev/null || npm install -g @willh/opencc-cli@0.1.4
 node scripts/zh-tw/convert.mjs

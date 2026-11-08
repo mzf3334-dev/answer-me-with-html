@@ -30,7 +30,7 @@ const SITE = join(ROOT, 'site');
 const SRC = join(SITE, 'src');
 const REPO = 'doggy8088/answer-me-with-html';
 // Where the site is published (GitHub Pages with a custom domain). Absolute URLs in the pages (canonical, hreflang, share images) start here.
-const SITE_URL = 'https://answer-me-with-html.com/';
+const SITE_URL = 'https://answer-me-with-html.gh.miniasp.com/';
 // The visit counter is served from a subdomain of the site, so the analytics server behind it stays private.
 // Cloudflare proxies the subdomain and only lets the tracker and its event endpoint through.
 // data-domains in the tag (see site/template.html) keeps local previews from counting.
@@ -39,7 +39,7 @@ export const STATS_WEBSITE_ID = '6cfdb29e-3e32-432f-8371-a2aee22393ad';
 
 // The page's own browser files, copied to assets/ without changes.
 const FRONT_FILES = ['main.js', 'live.js', 'chrome.js', 'playground.js', 'catalog.js', 'theme.js', 'editor.js', 'style.css'];
-const IMAGES = ['text-vs-page.png', 'text-vs-page-zh.png', 'tcp-en.png', 'tcp.png', 'tcp-en-dark.png', 'ste100.png', 'video-en.png', 'video-zh.png', 'plain-vs-skill.png'];
+const IMAGES = ['text-vs-page.png', 'text-vs-page-zh.png', 'tcp-en.png', 'tcp.png', 'tcp-en-dark.png', 'ste100.png', 'video-en.png', 'video-zh.png', 'plain-vs-skill.png', 'og-en.jpg', 'og-zh.jpg'];
 const PRERENDER = [
   ['video', 'examples/video-tcp.en.md', 'video-en.html'],
   ['video', 'examples/video-tcp.md', 'video-zh.html'],

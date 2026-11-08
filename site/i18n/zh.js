@@ -164,7 +164,7 @@ export default {
   meta_title: 'Answer me with HTML：提一個難題，拿到一頁圖解',
   meta_desc: '一個 Agent Skill，支援 Claude Code、Codex、Cursor 等。模型只寫一份簡短的 Markdown 稿件，自帶的 CLI 把它排成一頁離線可看的 HTML，模型要寫的 token 約為手寫 HTML 的 1/8。',
   og_locale: 'zh_TW',
-  og_image: 'text-vs-page-zh.png',
+  og_image: 'og-zh.jpg',
   og_image_alt: '同一個 TCP 問題的兩種回答：一堵終端文字牆，和一頁帶圖表的頁面',
   skip: '跳到正文',
 
@@ -427,7 +427,7 @@ export default {
   th_submit_t: '提交你自己的主題',
   th_submit_d: '也可以在<a href="new/" id="submit-theme">主題編輯器</a>裡手動製作，或者提交 PR，新增 <code>marketplace/themes/&lt;name&gt;.json</code>，規則見 <a href="https://github.com/doggy8088/answer-me-with-html/blob/main/CONTRIBUTING.md#theme-catalog">CONTRIBUTING.md</a>。每個主題上牆前都由維護者審核。主題庫裡的名字永久保留。',
   th_make_lead: '交給你的 agent。說出你想要的樣子，agent 會從這裡最接近的主題改起，檢查之後給你看淺色和深色效果，再幫你提交。',
-  th_make_prompt: '幫我給 Answer me with HTML 做一個主題，風格是：&lt;描述你想要的樣子&gt;。按 https://answer-me-with-html.com/themes/make.md 的步驟做。',
+  th_make_prompt: '幫我給 Answer me with HTML 做一個主題，風格是：&lt;描述你想要的樣子&gt;。按 https://answer-me-with-html.gh.miniasp.com/themes/make.md 的步驟做。',
   th_back: '全部主題',
   th_page_title: '{label}主題 — Answer me with HTML',
   th_page_desc: '{desc}Answer me with HTML 的頁面主題：可看淺色和深色效果，一條命令安裝，或讓 agent 代裝。',

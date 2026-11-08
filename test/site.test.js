@@ -101,7 +101,7 @@ test('site build: fills built-in keys first and reports unknown ones', () => {
 });
 
 const BUILT = { skip: !existsSync(join(ROOT, 'site/dist/themes/index.json')) };
-const SITE_URL = 'https://answer-me-with-html.com/';
+const SITE_URL = 'https://answer-me-with-html.gh.miniasp.com/';
 const NAMES = readdirSync(join(ROOT, 'marketplace/themes')).map((f) => f.replace(/\.json$/, '')).sort();
 const DETAIL = NAMES.flatMap((name) => [`themes/${name}/index.html`, `zh/themes/${name}/index.html`]);
 const EDITOR = ['themes/new/index.html', 'zh/themes/new/index.html'];
@@ -146,7 +146,7 @@ test('site build: sitemap.xml lists every page with the head alternates and robo
       ]);
     }
   }
-  assert.match(read(join(ROOT, 'site/dist/robots.txt')), /^Sitemap: https:\/\/answer-me-with-html\.com\/sitemap\.xml$/m);
+  assert.match(read(join(ROOT, 'site/dist/robots.txt')), /^Sitemap: https:\/\/answer-me-with-html\.gh\.miniasp\.com\/sitemap\.xml$/m);
 });
 
 test('site engine: render accepts an extra theme from a theme file, and the page carries it with its font', () => {
@@ -174,7 +174,7 @@ test('site build: themes/<name>.json are byte-identical copies, and themes/index
     assert.ok(source.equals(published), `${t.name}: the published file is the source file`);
     assert.equal(t.sha256, createHash('sha256').update(published).digest('hex'), t.name);
     assert.equal(t.size, published.length, t.name);
-    assert.equal(t.url, `https://answer-me-with-html.com/themes/${t.name}.json`);
+    assert.equal(t.url, `https://answer-me-with-html.gh.miniasp.com/themes/${t.name}.json`);
     const data = JSON.parse(source.toString('utf8'));
     assert.deepEqual([t.version, t.author, t.license, t.font, t.requires], [data.version, data.author, data.license, data.font, data.requires]);
     assert.deepEqual(t.label, data.label);
@@ -264,7 +264,7 @@ test('site build: the wall hands making a theme to an agent, and links to the ed
   for (const page of ['themes/index.html', 'zh/themes/index.html']) {
     const html = read(join(ROOT, 'site/dist', page));
     assert.match(html, /<a class="btn btn-primary btn-sm" href="#make">/, `${page}: the top button jumps to the make box`);
-    assert.match(html, /<pre id="c-make">[^<]*https:\/\/answer-me-with-html\.com\/themes\/make\.md[^<]*<\/pre>/, `${page}: the prompt names the guide`);
+    assert.match(html, /<pre id="c-make">[^<]*https:\/\/answer-me-with-html\.gh\.miniasp\.com\/themes\/make\.md[^<]*<\/pre>/, `${page}: the prompt names the guide`);
     assert.match(html, /data-copy="c-make"/, `${page}: the prompt has a copy button`);
     assert.ok(html.includes('<a href="new/" id="submit-theme">'), `${page}: the editor stays as a link`);
   }
@@ -274,7 +274,7 @@ test('site build: the agent guide and llms.txt are published as they are', BUILT
   const dist = join(ROOT, 'site/dist');
   assert.equal(read(join(dist, 'themes/make.md')), read(join(ROOT, 'site/make.md')));
   assert.equal(read(join(dist, 'llms.txt')), read(join(ROOT, 'site/llms.txt')));
-  assert.ok(read(join(dist, 'llms.txt')).includes('https://answer-me-with-html.com/themes/make.md'));
+  assert.ok(read(join(dist, 'llms.txt')).includes('https://answer-me-with-html.gh.miniasp.com/themes/make.md'));
 });
 
 test('site make.md: names every color and diagram token, every theme selector and the issue form fields', async () => {

@@ -100,5 +100,18 @@ writeFileSync(join(TMP, 'composite.html'), comp);
 p = await openPage(join(TMP, 'composite.html'), { width: 2400, height: 1533 });
 await p.shotViewport(join(IMG, 'text-vs-page-zh.png')); p.close();
 
+// 6. Share images: crop the two composites to Facebook's 1200x630 and export JPEG.
+const ogPage = `<!DOCTYPE html><html><body>
+<img id="en" src="${pathToFileURL(join(IMG, 'text-vs-page.png')).href}">
+<img id="zh" src="${pathToFileURL(join(IMG, 'text-vs-page-zh.png')).href}">
+</body></html>`;
+writeFileSync(join(TMP, 'og.html'), ogPage);
+p = await openPage(join(TMP, 'og.html'), { width: 800 });
+for (const [id, y0, out] of [['en', 40, 'og-en.jpg'], ['zh', 70, 'og-zh.jpg']]) {
+  const data = await p.ev(`(() => new Promise((res) => { const img = document.getElementById('${id}'); const c = document.createElement('canvas'); c.width = 1200; c.height = 630; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, ${y0}, img.naturalWidth, Math.round(img.naturalWidth * 630 / 1200), 0, 0, 1200, 630); res(c.toDataURL('image/jpeg', 0.87)); }))()`);
+  writeFileSync(join(IMG, out), Buffer.from(data.split(',')[1], 'base64'));
+}
+p.close();
+
 proc.kill();
-console.log('regenerated: tcp.png, architecture-dark.png, video-zh.png, text-vs-page-zh.png');
+console.log('regenerated: tcp.png, architecture-dark.png, video-zh.png, text-vs-page-zh.png, og-en.jpg, og-zh.jpg');

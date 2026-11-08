@@ -4,8 +4,8 @@
 
 ## Themes
 
-- [Make a theme](https://answer-me-with-html.com/themes/make.md): steps for an agent to make a theme, check it, show it to the user and submit it to the catalog
-- [Theme catalog](https://answer-me-with-html.com/themes/index.json): every catalog theme, with the URL of its JSON file; install one with `am theme add <name>`
+- [Make a theme](https://answer-me-with-html.gh.miniasp.com/themes/make.md): steps for an agent to make a theme, check it, show it to the user and submit it to the catalog
+- [Theme catalog](https://answer-me-with-html.gh.miniasp.com/themes/index.json): every catalog theme, with the URL of its JSON file; install one with `am theme add <name>`
 
 ## Docs
 
@@ -14,4 +14,4 @@
 
 ## Changes
 
-- [Changelog](https://answer-me-with-html.com/changelog/): the release notes of every version, newest first
+- [Changelog](https://answer-me-with-html.gh.miniasp.com/changelog/): the release notes of every version, newest first

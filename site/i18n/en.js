@@ -142,7 +142,7 @@ export default {
   meta_title: 'Answer me with HTML — ask a hard question, get a page',
   meta_desc: 'An agent skill for Claude Code, Codex, Cursor and more. The model writes a short Markdown draft; a bundled CLI turns it into one offline HTML page with diagrams. About 1/8 of the tokens.',
   og_locale: 'en_US',
-  og_image: 'text-vs-page.png',
+  og_image: 'og-en.jpg',
   og_image_alt: 'The same TCP question answered as a wall of terminal text and as one readable page with diagrams',
   skip: 'Skip to content',
 
@@ -405,7 +405,7 @@ export default {
   th_submit_t: 'Add your own theme',
   th_submit_d: 'You can also make one by hand in the <a href="new/" id="submit-theme">theme editor</a>, or open a pull request that adds <code>marketplace/themes/&lt;name&gt;.json</code>; the rules are in <a href="https://github.com/doggy8088/answer-me-with-html/blob/main/CONTRIBUTING.md#theme-catalog">CONTRIBUTING.md</a>. A maintainer reads every theme before it goes on the wall. A catalog name is reserved forever.',
   th_make_lead: 'Ask your agent. Describe the look you want: the agent starts from the closest theme here, checks it, shows you the result in light and dark, and helps you submit it.',
-  th_make_prompt: 'Make me a theme for Answer me with HTML that looks like: &lt;describe the look&gt;. Follow https://answer-me-with-html.com/themes/make.md',
+  th_make_prompt: 'Make me a theme for Answer me with HTML that looks like: &lt;describe the look&gt;. Follow https://answer-me-with-html.gh.miniasp.com/themes/make.md',
   th_back: 'All themes',
   th_page_title: '{label} theme — Answer me with HTML',
   th_page_desc: '{desc} A page theme for Answer me with HTML: see it in light and dark, then install it with one command or ask your agent to do it.',

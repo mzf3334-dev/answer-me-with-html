@@ -9,8 +9,8 @@ description: >-
   structure, state machine, lifecycle, history); any comparison, trade-off or decision with pros and
   cons; any diagnosis, review or investigation, especially with several causes or findings to rank;
   any answer with a table, a numbered or ranked list, steps, branches or several sections; or when the
-  user says "I don't get it / draw it / explain visually / 講講原理 / 沒看懂 / 畫個圖". When in doubt, use it: a
-  page is quick and cheap to make. Also for explainer videos ("make a video", "做個影片") and for changing
+  user says "I don't get it / draw it / explain visually / 讲讲原理 / 没看懂 / 画个图". When in doubt, use it: a
+  page is quick and cheap to make. Also for explainer videos ("make a video", "做个视频") and for changing
   its settings. Skip only for small talk, a trivial one-line answer, or when the user asks for plain
   text.
 ---
@@ -188,7 +188,7 @@ A reply starts with `# Re: <page title>` and lists `Decisions`, `Comments` and `
 
 Every sentence on the page gives the reader one fact they need. The idea comes from [ASD-STE100](https://www.asd-ste100.org/) (Simplified Technical English), a controlled English for aircraft manuals. This section takes its principles, not its full rule set; some rules are adapted from [ste-zh](https://github.com/dualface/ste-zh).
 
-- Start with the answer. Do not open with a preamble ("Here is an overview", `下面我來介紹`), and do not end with a summary or "hope this helps". The page ends when the facts end.
+- Start with the answer. Do not open with a preamble ("Here is an overview", `下面我来介绍`), and do not end with a summary or "hope this helps". The page ends when the facts end.
 - Do not describe how you worked ("I read the file, then…"). Give the result and its evidence: `path:line`, a command, a number.
 - Say each fact once. When a table or a diagram shows it, do not repeat it in the text.
 - One sentence, one fact. Call one thing by one name throughout.
@@ -200,7 +200,7 @@ Every sentence on the page gives the reader one fact they need. The idea comes f
 
 - Sentence length: steps (ordered lists) 20 words in English / 35 characters in Chinese; descriptions 25 words / 45 characters. The Chinese limits are a little looser than the 30 / 40 of [Simplified Technical Chinese](https://github.com/mzopedia/simplified-technical-chinese).
 - No more than 6 sentences per paragraph. Use a list for more.
-- Wordy words and filler: `utilize` → `use`, `進行優化` → `優化`, `賦能`, `綜上所述`, plus some Chinese typos and vague quantities.
+- Wordy words and filler: `utilize` → `use`, `进行优化` → `优化`, `赋能`, `综上所述`, plus some Chinese typos and vague quantities.
 - English passive voice in steps. Descriptions may use the passive when the actor does not matter.
 - Three or more `的` in one Chinese sentence.
 - For counter-examples shown on purpose, use `~~strikethrough~~` or put them in a table row whose status is `no`; the check skips them.

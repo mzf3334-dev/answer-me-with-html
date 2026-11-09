@@ -296,26 +296,6 @@ Maintainer conventions (generated bundle, page format, snapshot checks, reviewin
 
 There are two runtime dependencies: [marked](https://github.com/markedjs/marked) parses Markdown and [@dagrejs/dagre](https://github.com/dagrejs/dagre) lays out flow charts. Both are bundled into `am.mjs`.
 
-## Community
-
-Ask questions, share pages you made, suggest features, or just say hi.
-
-- [Discord](https://discord.gg/sYQuRRZNzQ)
-- QQ group: `1127099407`
-- [LINUX DO](https://linux.do), a Chinese-language developer forum
-- [AtomGit](https://atomgit.com/weixin_43367137/answer-me-with-html)
-
-Found a bug? Please open a [GitHub issue](https://github.com/doggy8088/answer-me-with-html/issues).
-
-## Star History
-
-<a href="https://star-history.com/#doggy8088/answer-me-with-html&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=doggy8088/answer-me-with-html&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=doggy8088/answer-me-with-html&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=doggy8088/answer-me-with-html&type=Date" />
-  </picture>
-</a>
 
 ## License
 

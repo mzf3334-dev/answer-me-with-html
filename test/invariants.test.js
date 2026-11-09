@@ -45,10 +45,19 @@ async function run(args, home, stdin = '') {
   return { code, err };
 }
 
-// The render time has minute precision and changes across minutes; before comparing, blank only the footer (the version follows the linked name, so it comes after `</a>`) / player bar time and the video title DATE cell.
+// The render time has minute precision and changes across minutes; blank the colophon, player bar time and video title DATE cell.
 const stable = (html) => html
+  .replace(/(<p class="am-colophon">(?:<bdi dir="ltr">)?)\d{4}-\d{2}-\d{2} \d{2}:\d{2}/g, '$1<time>')
   .replace(/((?:Answer me with HTML|<\/a>) [\d.]+ · )\d{4}-\d{2}-\d{2} \d{2}:\d{2}/g, '$1<time>')
   .replace(/(<b>DATE<\/b><span>)\d{4}-\d{2}-\d{2}/, '$1<time>');
+
+test('invariant: timestamp normalization handles left-to-right and right-to-left colophons', () => {
+  for (const [prefix, suffix] of [['', ''], ['<bdi dir="ltr">', '</bdi>']]) {
+    const page = (time) => `<p class="am-colophon">${prefix}${time}${suffix}</p>`;
+    assert.equal(stable(page('2026-11-09 10:22')), stable(page('2026-11-09 10:23')));
+    assert.notEqual(stable(page('2026-11-09 10:22')), stable(page('2026-11-09 10:22').replace('am-colophon', 'other')));
+  }
+});
 
 // Title and source of the first ## panel.
 function firstPanel(source) {

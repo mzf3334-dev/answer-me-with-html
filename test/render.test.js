@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
-import { renderDoc, RenderError, timestamp, withoutUpdateNotice } from '../src/render.js';
+import { renderDoc, RenderError, timestamp } from '../src/render.js';
 import { ParseError } from '../src/parse.js';
 import { getTheme } from '../src/themes/registry.js';
 import { COMPONENTS } from '../src/components/index.js';
@@ -131,37 +131,14 @@ test('render: the escaped source is embedded in a hidden textarea and reads back
 
 const UPDATE = { latest: '0.9.0', current: '0.5.0', command: 'npx skills update answer-me-with-html -y' };
 
-test('render: a known newer version adds a hidden new-version button, its popover, styles and script', () => {
-  const { html } = renderDoc('## A\nx', {}, {}, { update: UPDATE });
-  assert.match(html, /<div class="am-toolbar"[^>]*>\n<button class="am-btn am-btn--update" type="button" data-am="update" popovertarget="am-update" aria-label="New version 0\.9\.0" hidden>● <span class="am-update-text">New version <bdi>0\.9\.0<\/bdi><\/span><\/button>/);
-  assert.match(html, /<div class="am-update" id="am-update" popover>/);
-  assert.match(html, /You have <bdi>0\.5\.0<\/bdi>\./);
-  assert.match(html, /<code dir="ltr">npx skills update answer-me-with-html -y<\/code><button class="am-btn" type="button" data-am="copy-text" data-text="npx skills update answer-me-with-html -y"/);
-  assert.match(html, /<span>Update answer-me-with-html<\/span><button class="am-btn" type="button" data-am="copy-text" data-text="Update answer-me-with-html"/);
-  assert.match(html, /href="https:\/\/github\.com\/doggy8088\/answer-me-with-html\/releases"/);
-  assert.match(html, /\.am-update:popover-open/);
-  assert.match(html, /data-am="update"\]'\);/);
-});
-
-test('withoutUpdateNotice: takes out the button and the popover and leaves the rest of the page', () => {
-  const plain = renderDoc('## A\nx').html;
-  assert.equal(withoutUpdateNotice(plain), plain);
-  const stripped = withoutUpdateNotice(renderDoc('## A\nx', {}, {}, { update: UPDATE }).html);
-  assert.doesNotMatch(stripped, /<button[^>]*data-am="(update|copy-text)"|id="am-update"/);
-  assert.match(stripped, /<div class="am-toolbar"[^>]*>\n<label class="am-pick">/);
-  assert.match(stripped, /<\/div>\n<main class="am-sheet">/);
-});
-
-test('render: without a newer version the page carries nothing of the new-version notice', () => {
-  const { html } = renderDoc('## A\nx');
-  assert.doesNotMatch(html, /am-update|copy-text|popovertarget/);
-});
-
-test('render: the new-version notice speaks the page language and escapes the command', () => {
-  const { html } = renderDoc('---\nlang: zh\n---\n## A\n中文', {}, {}, { update: { ...UPDATE, command: 'git pull && npm install' } });
-  assert.match(html, /新版本 <bdi>0\.9\.0<\/bdi>/);
-  assert.match(html, /<span>更新 answer-me-with-html<\/span>/);
-  assert.match(html, /<code dir="ltr">git pull &amp;&amp; npm install<\/code>/);
+test('render: the page carries no new-version button, popover or script, whatever update state is passed', () => {
+  for (const options of [{}, { update: UPDATE }]) {
+    const { html } = renderDoc('## A\nx', {}, {}, options);
+    assert.doesNotMatch(html, /am-update|am-btn--update|copy-text|popovertarget/);
+    assert.match(html, /<div class="am-toolbar"[^>]*>\n<label class="am-pick">/);
+  }
+  const { html } = renderDoc('---\nlang: zh\n---\n## A\n中文', {}, {}, { update: UPDATE });
+  assert.doesNotMatch(html, /新版本|am-update/);
 });
 
 test('render: close_after_reply adds the countdown data, styles and script to the Reply button', () => {

@@ -43,7 +43,7 @@ function checkPluginCopy(dir) {
 
 // The commands in INSTALL.md are run as written, so the guide cannot drift from what works.
 // Only the repository source and the agent name are substituted; `claude` is a shim for the pinned Claude Code CLI.
-const GUIDE_SOURCE = 'doggy8088/answer-me-with-html';
+const GUIDE_SOURCE = 'mzf3334-dev/answer-me-with-html';
 
 function guideBlocks() {
   const blocks = [];

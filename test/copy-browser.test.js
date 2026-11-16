@@ -1,7 +1,7 @@
-// Browser seam for the three copy buttons outside the Reply sheet — the toolbar's Copy source, a code block's Copy and the
-// new-version popover's Copy. Each reads data-done for a moment after a click; this is what a second click inside that moment does
-// to the label, which decides whether the button ever says what it is again.
-// Needs Chrome, so it runs only with AM_E2E=1 (CI job `video`) like test/update-browser.test.js.
+// Browser seam for the two copy buttons outside the Reply sheet — the toolbar's Copy source and a code block's Copy. Each reads
+// data-done for a moment after a click; this is what a second click inside that moment does to the label, which decides whether
+// the button ever says what it is again.
+// Needs Chrome, so it runs only with AM_E2E=1 (CI job `video`) like test/layout-browser.test.js.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -39,8 +39,7 @@ before(async () => {
   if (SKIP) return;
   tmp = mkdtempSync(join(tmpdir(), 'am-copy-'));
   file = join(tmp, 'page.html');
-  const update = { latest: '0.9.0', current: '0.5.0', command: 'npx skills update answer-me-with-html -y' };
-  writeFileSync(file, renderDoc('---\nlang: en\n---\n## A\nText.\n\n```js\nconst a = 1;\n```\n', {}, {}, { update }).html);
+  writeFileSync(file, renderDoc('---\nlang: en\n---\n## A\nText.\n\n```js\nconst a = 1;\n```\n').html);
   chrome = spawn(CHROME, ['--headless=new', '--remote-debugging-port=0', `--user-data-dir=${join(tmp, 'profile')}`, '--no-first-run', '--no-default-browser-check', 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
   cdp = await connect(await devtoolsUrl(chrome));
   const { targetId } = await cdp.send('Target.createTarget', { url: 'about:blank' });
@@ -72,7 +71,6 @@ const PRESS_TWICE = `(async () => {
   const buttons = {
     toolbar: document.querySelector('[data-am="copy"]'),
     code: document.querySelector('[data-am="copy-code"]'),
-    update: document.querySelector('[data-am="copy-text"]'),
   };
   const labels = () => Object.fromEntries(Object.entries(buttons).map(([name, btn]) => [name, btn.textContent]));
   const idle = labels();
@@ -85,10 +83,10 @@ const PRESS_TWICE = `(async () => {
 test('copy: a button clicked twice inside its "Copied ✓" moment still comes back to its own label', { skip: SKIP }, async () => {
   await load(pathToFileURL(file).href);
   const r = await evaluate(PRESS_TWICE);
-  assert.deepEqual(r.idle, { toolbar: 'Copy source', code: 'Copy', update: 'Copy' }, 'each button starts from its own label');
-  assert.deepEqual(r.during, { toolbar: 'Copied ✓', code: 'Copied ✓', update: 'Copied ✓' }, 'the second click shows the copied label again');
+  assert.deepEqual(r.idle, { toolbar: 'Copy source', code: 'Copy' }, 'each button starts from its own label');
+  assert.deepEqual(r.during, { toolbar: 'Copied ✓', code: 'Copied ✓' }, 'the second click shows the copied label again');
   assert.deepEqual(r.after, r.idle, 'and the label comes back to the one the button started from');
-  assert.equal(r.copied, 6, 'both clicks copied, on every button');
+  assert.equal(r.copied, 4, 'both clicks copied, on every button');
 });
 
 // The moment restarts on each click, so a second click inside it dates the label from that click, not from the first one. Measured
@@ -100,7 +98,6 @@ const PRESS_TWICE_MEASURED = `(async () => {
   const buttons = {
     toolbar: document.querySelector('[data-am="copy"]'),
     code: document.querySelector('[data-am="copy-code"]'),
-    update: document.querySelector('[data-am="copy-text"]'),
   };
   const out = {};
   for (const [name, btn] of Object.entries(buttons)) {

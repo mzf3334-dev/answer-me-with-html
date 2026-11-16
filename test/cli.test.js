@@ -783,16 +783,15 @@ test('cli patch: on a video page, --style on this run wins over the style stored
   assert.equal(readFileSync(join(dir, 'vstyle-cli.html'), 'utf8'), before, 'a strict failure must not change the file');
 });
 
-test('render / patch: a newer version in state.json puts the new-version button on the page; AM_NO_UPDATE_CHECK turns it off', async () => {
+test('render: a newer version in state.json shows nowhere — not in the page, not as a hint', async () => {
   writeFileSync(join(dir, 'state.json'), JSON.stringify({ latestVersion: '99.0.0', lastUpdateCheck: Date.now() }));
   try {
     const page = join(dir, 'update.html');
-    assert.equal((await run(['render', '-', '-o', page, '--no-open'], { stdin: GOOD })).code, 0);
-    assert.match(readFileSync(page, 'utf8'), /data-am="update"[^>]*>● <span class="am-update-text">[^<]*<bdi>99\.0\.0<\/bdi>/);
-    assert.equal((await run(['patch', page, '--panel', 'A', '--no-open'], { stdin: '## A 流程\n改过的正文\n', env: { AM_NO_UPDATE_CHECK: '1' } })).code, 0);
-    assert.doesNotMatch(readFileSync(page, 'utf8'), /am-update/);
-    assert.equal((await run(['render', '-', '-o', page, '--no-open'], { stdin: GOOD, env: { AM_NO_UPDATE_CHECK: '1' } })).code, 0);
-    assert.doesNotMatch(readFileSync(page, 'utf8'), /am-update/);
+    const r = await run(['render', '-', '-o', page, '--no-open'], { stdin: GOOD });
+    assert.equal(r.code, 0, r.err);
+    assert.doesNotMatch(`${r.out}${r.err}`, /99\.0\.0|Update hint/);
+    assert.doesNotMatch(readFileSync(page, 'utf8'), /data-am="update"|am-update|99\.0\.0/);
+    assert.equal(JSON.parse(readFileSync(join(dir, 'state.json'), 'utf8')).lastUpdateHint, undefined, 'nothing records a version hint');
   } finally {
     rmSync(join(dir, 'state.json'), { force: true });
   }

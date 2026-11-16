@@ -63,7 +63,7 @@ Decide without asking:
 The plugin carries the skill and also the `/answer-me-with-html:config` and `/answer-me-with-html:clean` commands.
 
 ```bash
-claude plugin marketplace add doggy8088/answer-me-with-html
+claude plugin marketplace add mzf3334-dev/answer-me-with-html
 claude plugin install answer-me-with-html@answer-me-with-html
 ```
 
@@ -72,7 +72,7 @@ The plugin loads in the next session, or after I run `/reload-plugins`. Say so i
 ### Any other agent (Codex, Cursor, OpenCode and more)
 
 ```bash
-npx -y skills add doggy8088/answer-me-with-html -g -y -a <your agent name>
+npx -y skills add mzf3334-dev/answer-me-with-html -g -y -a <your agent name>
 ```
 
 You know which agent you are. Use the name that `npx -y skills add --help` documents for it. For Claude Code it is `claude-code`. If the installer does not know your name, do not guess and do not ask me: stop this step and put the error in the report, with the "Manual install" link from the README.
@@ -88,7 +88,7 @@ This installs the skill only. It works the same way, but there are no slash comm
 If you are running in DeepSeek Harness, install it as a DSH plugin. Use the profile you run in (`web` is the shipped one):
 
 ```bash
-dsh plugin --profile <profile> add github:doggy8088/answer-me-with-html
+dsh plugin --profile <profile> add github:mzf3334-dev/answer-me-with-html
 ```
 
 `dsh plugin add` needs `pnpm` on your `PATH`. The package declares a `dsh.bundle` patch (`cordis.patch.yml`), which mounts its `skills/` directory as a skill provider named `answer-me-with-html`. Nothing is copied into `~/.dsh/skills`. The skill is available in the next DSH session of that profile. If the output says "declares no dsh.bundle", the install did not register the skill: report it.

@@ -10,7 +10,7 @@ import { lintDoc } from './lint/ste.js';
 import { esc } from './svg/text.js';
 import { scaleSvgBoxes } from './svg/shapes.js';
 import { SCALE } from './themes/type-scale.js';
-import { VERSION, RUNTIME_JS, TABLE_JS, DELTA_JS, UPDATE_JS, CLOSE_AFTER_JS } from './assets.js';
+import { VERSION, RUNTIME_JS, TABLE_JS, DELTA_JS, CLOSE_AFTER_JS } from './assets.js';
 import { rootTag, rootCarrierAttrs, sourceTag } from './page.js';
 import { resolveLanguage } from './language.js';
 import { inlineImages, remoteImages, ImageError, IMAGE_EXAMPLE } from './images.js';
@@ -42,11 +42,10 @@ export class LintError extends Error {
 // previousLanguage: the language the page had before (a patched page keeps it unless the draft declares one).
 // baseDir: where relative image paths are read from; codeDir: where relative code paths are read from (the folder the agent works in).
 // knownImages / knownCode: what the page already embeds, the fallback when a file is gone.
-// update: { latest, current, command, highlights } from pageUpdate in src/update.js when a newer version is known; the page then has a new-version button.
 // closeAfter: the close_after_reply setting; the page then closes its tab a few seconds after the reply is copied (src/runtime/close-after-reply.js).
 // colophon: the colophon setting; false leaves out the generation date above the title (the generator meta tag stays).
 // scale: the reader's text size (src/themes/type-scale.js); 1 is the default, so it adds nothing to the page.
-export function renderDoc(source, overrides = {}, defaults = {}, { themes = BUILTIN, previousLanguage, baseDir, codeDir, knownImages, knownCode, update, closeAfter = false, colophon = true, scale = 1 } = {}) {
+export function renderDoc(source, overrides = {}, defaults = {}, { themes = BUILTIN, previousLanguage, baseDir, codeDir, knownImages, knownCode, closeAfter = false, colophon = true, scale = 1 } = {}) {
   const choices = { theme: themes.choices('page') };
   const { doc: parsed, errors } = parseDocLoose(source, { defaults, choices });
   const meta = applyOverrides(parsed.meta, overrides, { ...CHOICES, ...choices });
@@ -77,7 +76,7 @@ export function renderDoc(source, overrides = {}, defaults = {}, { themes = BUIL
   const page = TEMPLATES[doc.meta.template]({ meta: doc.meta, introHtml, panels, ui, language });
   // A right-to-left page isolates each run of text with no right-to-left letter as left to right (src/bidi.js).
   const body = language.dir === 'rtl' ? isolateLtrRuns(page) : page;
-  const html = shell({ meta: doc.meta, language, body, source, embedded: themes.embedFor(doc.meta.theme, 'page'), update, closeAfter, colophon, scale });
+  const html = shell({ meta: doc.meta, language, body, source, embedded: themes.embedFor(doc.meta.theme, 'page'), closeAfter, colophon, scale });
   return { html, warnings, stats, meta: doc.meta, language };
 }
 
@@ -232,43 +231,6 @@ function colophon(language) {
 // template's header is the first one in the body: the intro and the panels come after it.
 const withColophon = (body, language) => body.replace('<header class="am-head">', (head) => `${head}${colophon(language)}`);
 
-// The new-version button and its popover (a native popover, so it opens, closes on Esc and on a click outside with no script). The
-// button starts hidden; src/runtime/update.js shows it where the browser has popovers. withoutUpdateNotice takes both out again.
-function updateNotice(ui, update, labelKey) {
-  if (!update) return { button: '', popover: '' };
-  const t = ui.update;
-  // The highlights in the page language, else in English (the labels fall back the same way). `code` spans become <code>.
-  const lines = update.highlights?.[labelKey] ?? update.highlights?.en;
-  const notes = lines
-    ? `<p class="am-update-label">${esc(t.whatsNew)}</p>\n<ul class="am-update-notes">${lines.map((l) => `<li>${esc(l).replace(/`([^`]+)`/g, '<code>$1</code>')}</li>`).join('')}</ul>\n`
-    : '';
-  const plain = t.button.replace('{version}', update.latest);
-  const fill = (s) => esc(s).replace('{version}', `<bdi>${esc(update.latest)}</bdi>`).replace('{current}', `<bdi>${esc(update.current)}</bdi>`);
-  // The command is code and reads left to right; the line for the agent is a sentence in the page language.
-  const row = (text, code) => `<div class="am-update-row">${code ? `<code dir="ltr">${esc(text)}</code>` : `<span>${esc(text)}</span>`}<button class="am-btn" type="button" data-am="copy-text" data-text="${esc(text)}" data-done="${esc(ui.done)}">${esc(ui.copyCode)}</button></div>`;
-  return {
-    button: `<button class="am-btn am-btn--update" type="button" data-am="update" popovertarget="am-update" aria-label="${esc(plain)}" hidden>● <span class="am-update-text">${fill(t.button)}</span></button>\n`,
-    popover: `<div class="am-update" id="am-update" popover>
-<p class="am-update-title">${fill(t.button)}</p>
-<p>${fill(t.current)}</p>
-${notes}<p class="am-update-label">${esc(t.run)}</p>
-${row(update.command, true)}
-<p class="am-update-label">${esc(t.agent)}</p>
-${row(t.agentText, false)}
-<a href="https://github.com/doggy8088/answer-me-with-html/releases" target="_blank" rel="noopener">${esc(t.notes)}</a>
-</div>
-`,
-  };
-}
-
-// The page without its new-version button and popover, for a reader on another device (src/serve.js): the notice is for the person
-// who made the page. Both come before the body, so the first match is the one updateNotice wrote.
-export function withoutUpdateNotice(html) {
-  return html
-    .replace(/<button class="am-btn am-btn--update"[^]*?<\/button>\n/, '')
-    .replace(/<div class="am-update" id="am-update" popover>[^]*?\n<\/div>\n/, '');
-}
-
 // A diagram with change markers carries a count row; only then the page needs the delta styles and script.
 export const hasDelta = (html) => html.includes('class="am-delta-bar"');
 
@@ -307,15 +269,14 @@ function scaleButtons(ui) {
   return `${button('scale-down', ui.scale.down, 'A−')}${button('scale-up', ui.scale.up, 'A+')}`;
 }
 
-function shell({ meta, language, body, source, embedded, update, closeAfter, colophon, scale }) {
+function shell({ meta, language, body, source, embedded, closeAfter, colophon, scale }) {
   const { ui, labelKey } = language;
-  const notice = updateNotice(ui, update, labelKey);
   const pick = (name, label, values, current) => `<label class="am-pick">${esc(label)}<select data-am="${name}">${values
     .map(([value, text]) => `<option value="${esc(value)}"${value === current ? ' selected' : ''}>${esc(text)}</option>`).join('')}</select></label>`;
   const root = { lang: language.htmlLang, dir: language.dir, theme: meta.theme, mode: meta.mode, style: meta.style, scale };
   // The one inline script, as the browser reads it: the policy pins a hash of exactly this text.
   const interactiveTable = body.includes('<table data-am-table=');
-  const script = `\n${RUNTIME_JS}${interactiveTable ? TABLE_JS : ''}${hasDelta(body) ? DELTA_JS : ''}${update ? UPDATE_JS : ''}${closeAfter ? CLOSE_AFTER_JS : ''}`;
+  const script = `\n${RUNTIME_JS}${interactiveTable ? TABLE_JS : ''}${hasDelta(body) ? DELTA_JS : ''}${closeAfter ? CLOSE_AFTER_JS : ''}`;
   return `<!doctype html>
 ${rootTag(root)}
 <head>
@@ -325,19 +286,19 @@ ${cspMeta([script], { live: true })}
 <meta name="generator" content="Answer me with HTML ${VERSION}">
 <title>${esc(meta.title || 'Answer me with HTML')}</title>
 <style>
-${pageCss(embedded, { diff: body.includes('class="am-codeblock am-codeblock--diff"'), delta: hasDelta(body), rtl: language.dir === 'rtl', math: hasMath(body), chart: hasChart(body), table: interactiveTable, update: Boolean(update), closeAfter, scale })}
+${pageCss(embedded, { diff: body.includes('class="am-codeblock am-codeblock--diff"'), delta: hasDelta(body), rtl: language.dir === 'rtl', math: hasMath(body), chart: hasChart(body), table: interactiveTable, closeAfter, scale })}
 </style>
 </head>
 <body>
 <div class="am-toolbar"${rootCarrierAttrs(root)}>
-${notice.button}${pick('theme', ui.theme, embedded.map((t) => [t.name, t.label[labelKey]]), meta.theme)}
+${pick('theme', ui.theme, embedded.map((t) => [t.name, t.label[labelKey]]), meta.theme)}
 ${pick('mode', ui.modeLabel, Object.entries(ui.mode), meta.mode)}
 ${scaleButtons(ui)}
 <button class="am-btn am-btn--reply" type="button" data-am="reply" data-ui="${esc(JSON.stringify({ ...ui.reply, done: ui.done, remarks: ui.remark.section, kinds: ui.remark.kinds, ...(closeAfter ? { closeAfter: { seconds: CLOSE_AFTER_SECONDS, ...ui.closeAfter } } : {}) }))}">${esc(ui.reply.button)}</button>
 <button class="am-btn am-btn--remark" type="button" data-am="remark" data-ui="${esc(JSON.stringify(ui.remark))}">${esc(ui.remark.button)}</button>
 <button class="am-btn" type="button" data-am="copy" data-done="${esc(ui.done)}">${esc(ui.copy)}</button>
 </div>
-${notice.popover}${colophon ? withColophon(body, language) : body}
+${colophon ? withColophon(body, language) : body}
 ${lightboxShell(ui, body.includes('class="am-diagram'))}${sourceTag(source)}
 <script>${script}</script>
 </body>

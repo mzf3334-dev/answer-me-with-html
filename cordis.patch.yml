@@ -1,7 +1,7 @@
 # DeepSeek Harness (DSH) bundle patch for answer-me-with-html.
 #
 # package.json points `dsh.bundle.patch` here, so
-# `dsh plugin --profile <profile> add github:doggy8088/answer-me-with-html`
+# `dsh plugin --profile <profile> add github:mzf3334-dev/answer-me-with-html`
 # registers the skill. The single `insert` row mounts a dedicated
 # @deepseek-ai/dsh-skill-filesystem provider whose only root is this package's
 # bundled `skills/` directory.

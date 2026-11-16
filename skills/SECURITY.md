@@ -1,5 +1,5 @@
 # Security Policy
 
-This folder is the plugin bundle of answer-me-with-html. Its security policy is the repository's: <https://github.com/doggy8088/answer-me-with-html/blob/main/SECURITY.md>.
+This folder is the plugin bundle of answer-me-with-html. Its security policy is the repository's: <https://github.com/mzf3334-dev/answer-me-with-html/blob/main/SECURITY.md>.
 
-Only the latest release gets security fixes. Report a vulnerability privately through GitHub, not in a public issue: <https://github.com/doggy8088/answer-me-with-html/security/advisories/new>.
+Only the latest release gets security fixes. Report a vulnerability privately through GitHub, not in a public issue: <https://github.com/mzf3334-dev/answer-me-with-html/security/advisories/new>.

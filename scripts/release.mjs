@@ -1,6 +1,6 @@
 // First release step: write the version number into every manifest and rebuild the bundle.
 // Usage: npm run release -- 0.4.8
-// Then: write highlights.json and changelog/<version>.md, commit, open a PR, merge; the release workflow tags the merge commit and publishes the GitHub Release (see CONTRIBUTING.md).
+// Then: write changelog/<version>.md, commit, open a PR, merge; the release workflow tags the merge commit and publishes the GitHub Release (see CONTRIBUTING.md).
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -28,9 +28,6 @@ for (const f of FILES) {
 }
 execFileSync('npm', ['run', 'build', '--silent'], { cwd: fileURLToPath(ROOT), stdio: 'inherit', shell: process.platform === 'win32' });
 console.log(`✓ ${current} → ${version}: ${FILES.length} manifests updated, bundle rebuilt. Next: npm test, then commit and open a PR.`);
-// highlights.json is written by hand: the new-version popover shows it to users of older versions (test/highlights.test.js checks it).
-const highlights = JSON.parse(readFileSync(new URL('highlights.json', ROOT), 'utf8')).version;
-if (highlights !== version) console.log(`! highlights.json still describes ${highlights}: write up to 3 highlights of ${version} in every page language.`);
 if (!existsSync(new URL(`changelog/${version}.md`, ROOT))) console.log(`! changelog/${version}.md is missing: write the release notes (first line <!-- release ${version} YYYY-MM-DD -->, English, a --- line, Chinese).`);
 
 // Change only this project's version fields in each file; returns a new object.

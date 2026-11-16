@@ -21,13 +21,11 @@ import { pickProvider, audioMapProvider, TtsError } from './video/tts.js';
 import { exportMp4, exportWebm, ExportError } from './video/export.js';
 import { exportPage, isHtmlPage } from './export.js';
 import { afterRender, clean, usage, mb, CLEAN } from './housekeeping.js';
-import { runUpdateCheck, pageUpdate } from './update.js';
 import { amHome, readConfig, setConfig, resetConfig, configChoices, CONFIG_KEYS, ConfigError } from './config.js';
 import { ensureHome, tempHome, checkedTempHome, UnsafeTempHome } from './home.js';
 import { hasCommand, renameOver, isDenied } from './sys.js';
 import { loadMath } from './math-load.js';
 import { replacePanel, PatchError } from './patch.js';
-import { readState } from './state.js';
 import { readPage } from './page.js';
 import { readEmbeddedImages } from './images.js';
 import { readEmbeddedCode, MAX_CODE_LINES, LONG_CODE_LINES } from './code.js';
@@ -281,7 +279,6 @@ export async function main(argv, io = {}) {
     case 'theme': return cmdTheme(arg, rest[0], opts, ctx);
     case 'clean': return cmdClean(opts, { print, fail, env });
     case 'serve': return cmdServe(opts, ctx);
-    case '__update-check': return (await runUpdateCheck(amHome(env))) ? 0 : 1;
     case 'list': return cmdList(ctx), 0;
     case 'help': return cmdHelp(arg, { print, fail });
     default:
@@ -345,7 +342,7 @@ async function cmdRender(src, opts, ctx, baseDir, from) {
   await loadMath(src);
   let result;
   try {
-    result = renderDoc(src, { theme: opts.theme, template: opts.template, style: opts.style, mode: opts.mode }, { theme, mode, style }, { themes: ctx.themes, baseDir, codeDir: ctx.io.cwd ?? process.cwd(), update: updateFor(config, ctx), closeAfter: config.values.close_after_reply, colophon: config.values.colophon, scale: config.values.scale });
+    result = renderDoc(src, { theme: opts.theme, template: opts.template, style: opts.style, mode: opts.mode }, { theme, mode, style }, { themes: ctx.themes, baseDir, codeDir: ctx.io.cwd ?? process.cwd(), closeAfter: config.values.close_after_reply, colophon: config.values.colophon, scale: config.values.scale });
   } catch (e) {
     return reportDraftError(e, src, from, ctx);
   }
@@ -362,9 +359,6 @@ async function cmdRender(src, opts, ctx, baseDir, from) {
   if (held) print(`  Not opened because of the warnings; to render again, add --replace ${written}`);
   return finish(written, held ? { ...opts, 'no-open': true } : opts, config, ctx);
 }
-
-// The new-version button for the page, from the version the background check last saw (src/update.js).
-const updateFor = (config, { env, io }) => pageUpdate(readState(amHome(env)), VERSION, io.scriptPath, env, config.values);
 
 // Any note that asks the author to fix the draft: STE, code, math, diagram and raw-HTML warnings.
 const hasWarnings = (result) => hasRetryWarnings(result) || (result.stats.componentWarnings ?? []).length > 0 || (result.stats.htmlWarnings ?? []).length > 0;
@@ -473,7 +467,7 @@ Usage:
 - --pdf writes an A4 PDF with the page's own print rules (@media print), background colors, no header and no footer.
 - --png writes <dir>/<page-name>-1.png, -2.png ... at 1200 CSS px wide and 2x (2400 px), in slices no taller than 1800 CSS px.
   A cut falls in a gap between panels; a panel taller than 1800 CSS px is cut at the limit, so its text can span two PNG files.
-  The toolbar, the reply and remark controls and the new-version notice are left out.
+  The toolbar and the reply and remark controls are left out.
   A later export into the same folder removes <page-name>-<n>.png slices it did not write again. Other files stay.
   A slice that is the input page, or that cannot be removed, is left in place and reported.
   Run one export of a page into a folder at a time. Two at once can remove each other's slices.
@@ -620,7 +614,7 @@ async function cmdPatch(htmlArg, fromArg, opts, ctx) {
       // Video pages also keep the original page's theme, mode and STE strictness (e.g. 3b1b / --style off); this command's arguments win.
       result = await buildVideo(patched, voice, { ...opts, theme: overrides.theme, mode: overrides.mode, style: overrides.style, previousLanguage: page.lang }, config, ctx);
     } else {
-      result = renderDoc(patched, overrides, { theme, mode, style }, { themes: ctx.themes, previousLanguage: page.lang, baseDir: cwd, codeDir: cwd, knownImages: readEmbeddedImages(html), knownCode: readEmbeddedCode(html), update: updateFor(config, ctx), closeAfter: config.values.close_after_reply, colophon: config.values.colophon, scale: page.scale });
+      result = renderDoc(patched, overrides, { theme, mode, style }, { themes: ctx.themes, previousLanguage: page.lang, baseDir: cwd, codeDir: cwd, knownImages: readEmbeddedImages(html), knownCode: readEmbeddedCode(html), closeAfter: config.values.close_after_reply, colophon: config.values.colophon, scale: page.scale });
     }
   } catch (e) {
     if (e instanceof TtsError) {
@@ -936,18 +930,15 @@ const count = (n, noun) => `${n} ${noun}${n === 1 ? '' : 's'}`;
 
 // Wrap-up after a successful render: print maintenance notices, open the browser per config. io.open can inject the opener.
 function finish(file, opts, config, ctx) {
-  printHints(config, ctx);
+  printHints(ctx);
   if (shouldOpen(opts, ctx.env, config.values)) (ctx.io.open ?? openFile)(file);
   return 0;
 }
 
-// Notices attached after a successful render (cleanup, update), for the Agent, which asks the user.
-function printHints(config, { env, io, print }) {
+// Notices attached after a successful render (cleanup), for the Agent, which asks the user.
+function printHints({ env, print }) {
   try {
-    const hints = afterRender({
-      home: amHome(env), env, config: config.values, current: VERSION,
-      scriptPath: io.scriptPath, background: Boolean(io.background),
-    });
+    const hints = afterRender({ home: amHome(env) });
     hints.forEach((h) => print(h));
   } catch {
     // A maintenance-notice error does not affect the render result.

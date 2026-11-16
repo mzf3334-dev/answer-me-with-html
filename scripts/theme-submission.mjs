@@ -14,7 +14,7 @@ import { parseIssue } from '../src/themes/submission-issue.js';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const THEMES_DIR = join(ROOT, 'marketplace/themes');
 const EDITOR_URL = 'https://answer-me-with-html.com/themes/new/';
-const RULES_URL = 'https://github.com/doggy8088/answer-me-with-html/blob/main/CONTRIBUTING.md#theme-catalog';
+const RULES_URL = 'https://github.com/mzf3334-dev/answer-me-with-html/blob/main/CONTRIBUTING.md#theme-catalog';
 
 // The hidden first line of the bot comment: the workflow finds its own comment by it.
 export const MARKER = '<!-- theme-submission -->';

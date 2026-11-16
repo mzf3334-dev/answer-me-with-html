@@ -77,7 +77,7 @@ for (const f of CONTENT) {
   const c = simpCount(read(f));
   if (c) fail(2, `${c} Simplified-only characters in content file ${f}`);
 }
-const SIMP_OK = /^(src\/|test\/|scripts\/zh-tw\/|docs\/reference\.md$|highlights\.json$|scripts\/smoke-install\.mjs$)/;
+const SIMP_OK = /^(src\/|test\/|scripts\/zh-tw\/|docs\/reference\.md$|scripts\/smoke-install\.mjs$)/;
 for (const f of TEXT_FILES) {
   if (CONTENT.includes(f) || SIMP_OK.test(f) || f.endsWith('scripts/am.mjs')) continue;
   const c = simpCount(read(f));

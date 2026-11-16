@@ -5,7 +5,7 @@ You are an agent. Your user wants a theme for Answer me with HTML, a tool that t
 ## 1. Find the `am` command
 
 - If the Answer me with HTML skill is installed, `am` is `node <skill folder>/scripts/am.mjs`.
-- If it is not installed, install it with `npx skills add doggy8088/answer-me-with-html`, or ask the user how they want to install it.
+- If it is not installed, install it with `npx skills add mzf3334-dev/answer-me-with-html`, or ask the user how they want to install it.
 - `am theme check` needs version 0.4.10 or newer. A theme's `font` field needs 0.5.3 or newer; older versions show system fonts.
 
 ## 2. Start from the closest catalog theme
@@ -64,7 +64,7 @@ It reports errors and contrast problems, and writes two specimen pages, light an
 Submitting publishes the theme on GitHub, so ask first. Build the prefilled issue URL:
 
 ```bash
-node -e 'const fs=require("fs"),os=require("os"),path=require("path");const n=process.argv[1];const f=path.join(process.env.AM_HOME||path.join(os.homedir(),".answer-me-with-html"),"themes",n+".json");const u=new URL("https://github.com/doggy8088/answer-me-with-html/issues/new");u.search=new URLSearchParams({template:"theme.yml",title:"Theme: "+n,name:n,theme:JSON.stringify(JSON.parse(fs.readFileSync(f,"utf8")))});console.log(u.href)' <name>
+node -e 'const fs=require("fs"),os=require("os"),path=require("path");const n=process.argv[1];const f=path.join(process.env.AM_HOME||path.join(os.homedir(),".answer-me-with-html"),"themes",n+".json");const u=new URL("https://github.com/mzf3334-dev/answer-me-with-html/issues/new");u.search=new URLSearchParams({template:"theme.yml",title:"Theme: "+n,name:n,theme:JSON.stringify(JSON.parse(fs.readFileSync(f,"utf8")))});console.log(u.href)' <name>
 ```
 
 Give the URL to the user, or open it in their browser. The user needs a GitHub account. On the page they tick the License box and click "Create". If the URL is longer than 8000 characters, give the URL without the `theme` parameter and ask the user to paste the file into "Theme JSON".

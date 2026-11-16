@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable, Writable } from 'node:stream';
 import { usage, clean, cleanHint, afterRender, CLEAN, mb } from '../src/housekeeping.js';
-import { updateHint, newer, updateCommand, shouldCheckUpdate, runUpdateCheck, parseVersion, pageUpdate } from '../src/update.js';
+import { parseVersion, newer } from '../src/version.js';
 import { readState, writeState } from '../src/state.js';
 import { main } from '../src/cli.js';
 
@@ -185,65 +185,16 @@ test('cleanHint: hints above 200 MB, or above 20 MB when not cleaned for long; n
   assert.equal(cleanHint({ firstSeen: NOW, lastCleanHint: NOW - 2 * DAY }, use(CLEAN.bigBytes), NOW), null, 'throttled');
 });
 
-test('newer / updateHint / updateCommand: hint only when a newer version exists, with the command for the install method', () => {
-  assert.ok(newer('0.10.0', '0.9.9'));
-  assert.ok(!newer('0.3.0', '0.3.0'));
-  assert.ok(!newer('0.2.9', '0.3.0'));
-  assert.equal(updateHint({ latestVersion: '0.3.0' }, '0.3.0', ''), null);
-  assert.match(updateHint({ latestVersion: '0.4.0' }, '0.3.0', '/x/.agents/skills/a/scripts/am.mjs'), /npx skills update answer-me-with-html -y/);
-  assert.match(updateCommand('/Users/u/.claude/plugins/cache/answer-me-with-html/answer-me-with-html/0.3.0/skills/x/scripts/am.mjs'), /claude plugin update answer-me-with-html@answer-me-with-html/);
-  assert.equal(updateHint({ latestVersion: '0.4.0', lastUpdateHint: NOW - DAY }, '0.3.0', '', NOW), null, 'throttled');
-});
-
-test('pageUpdate: the page gets the button whenever a newer version is known, with the plain command for the install method', () => {
-  assert.equal(pageUpdate({}, '0.3.0', '', {}, {}), null);
-  assert.equal(pageUpdate({ latestVersion: '0.3.0' }, '0.3.0', '', {}, {}), null);
-  assert.deepEqual(pageUpdate({ latestVersion: '0.4.0', lastUpdateHint: NOW }, '0.3.0', '/x/.agents/skills/a/scripts/am.mjs', {}, {}),
-    { latest: '0.4.0', current: '0.3.0', command: 'npx skills update answer-me-with-html -y', highlights: null }, 'not throttled by the agent hint');
-  assert.equal(pageUpdate({ latestVersion: '0.4.0' }, '0.3.0', '/Users/u/.claude/plugins/cache/a/b/0.3.0/skills/x/scripts/am.mjs', {}, {}).command,
-    'claude plugin update answer-me-with-html@answer-me-with-html');
-  assert.equal(pageUpdate({ latestVersion: '0.4.0' }, '0.3.0', '/home/u/answer-me-with-html/bin/am.js', {}, {}).command, 'git pull && npm install');
-  assert.equal(pageUpdate({ latestVersion: '0.4.0' }, '0.3.0', '', { CI: 'true' }, {}), null);
-  assert.equal(pageUpdate({ latestVersion: '0.4.0' }, '0.3.0', '', { AM_NO_UPDATE_CHECK: '1' }, {}), null);
-  assert.equal(pageUpdate({ latestVersion: '0.4.0' }, '0.3.0', '', {}, { update_check: false }), null);
-});
-
-test('shouldCheckUpdate: once a day; no check under CI, AM_NO_UPDATE_CHECK or update_check off', () => {
-  assert.ok(shouldCheckUpdate({}, {}, {}, NOW));
-  assert.ok(!shouldCheckUpdate({ lastUpdateCheck: NOW - DAY / 2 }, {}, {}, NOW));
-  assert.ok(shouldCheckUpdate({ lastUpdateCheck: NOW - DAY }, {}, {}, NOW));
-  assert.ok(!shouldCheckUpdate({}, { CI: 'true' }, {}, NOW));
-  assert.ok(!shouldCheckUpdate({}, { AM_NO_UPDATE_CHECK: '1' }, {}, NOW));
-  assert.ok(!shouldCheckUpdate({}, {}, { update_check: false }, NOW));
-});
-
-test('runUpdateCheck: stores the latest version; silent on network failure', async () => {
-  const ok = async () => ({ ok: true, json: async () => ({ version: '0.9.0' }) });
-  assert.equal(await runUpdateCheck(home, ok), '0.9.0');
-  assert.equal(readState(home).latestVersion, '0.9.0');
-  assert.equal(await runUpdateCheck(home, async () => { throw new Error('offline'); }), null);
-  assert.equal(await runUpdateCheck(home, async () => ({ ok: false })), null);
-});
-
-test('afterRender: records first use; stores the throttle time after a hint; starts no background check without permission', () => {
+test('afterRender: records first use and the cleanup hint time, and prints the cleanup hint once', () => {
   file('videos/big.mp4', CLEAN.bigBytes);
-  writeState(home, { latestVersion: '9.0.0', lastUpdateCheck: NOW });
-  const hints = afterRender({ home, env: {}, config: {}, current: '0.3.0', scriptPath: '', background: false, now: NOW });
-  assert.equal(hints.length, 2);
+  const hints = afterRender({ home, now: NOW });
+  assert.equal(hints.length, 1);
+  assert.match(hints[0], /^! Cleanup hint:/);
   const st = readState(home);
   assert.equal(st.firstSeen, NOW);
   assert.equal(st.lastCleanHint, NOW);
-  assert.equal(st.lastUpdateHint, NOW);
-  assert.deepEqual(afterRender({ home, env: {}, config: {}, current: '0.3.0', scriptPath: '', background: false, now: NOW + DAY }), []);
-});
-
-test('afterRender: no hint for a known newer version under update_check off, CI or AM_NO_UPDATE_CHECK', () => {
-  writeState(home, { latestVersion: '9.0.0', lastUpdateCheck: NOW, firstSeen: NOW });
-  const run = (env, config) => afterRender({ home, env, config, current: '0.3.0', scriptPath: '', background: false, now: NOW });
-  assert.deepEqual(run({}, { update_check: false }), []);
-  assert.deepEqual(run({ CI: 'true' }, {}), []);
-  assert.deepEqual(run({ AM_NO_UPDATE_CHECK: '1' }, {}), []);
-  assert.equal(run({}, {}).length, 1, 'hints as usual when on');
+  assert.equal(st.lastUpdateHint, undefined, 'no version notice is ever recorded');
+  assert.deepEqual(afterRender({ home, now: NOW + DAY }), []);
 });
 
 test('mb: uses KB below 1 MB', () => {
@@ -325,43 +276,6 @@ test('parseVersion / newer: accept a v prefix; pre-releases and garbage never co
   assert.ok(!newer(undefined, '0.4.0'));
 });
 
-test('updateCommand: suggests git pull when running from git clone / npm link', () => {
-  assert.match(updateCommand('/home/u/answer-me-with-html/bin/am.js'), /git pull && npm install/);
-});
-
-test('updateCommand: gives the exact dsh command, with the profile and package read out of the path', () => {
-  assert.match(updateCommand('/Users/u/.dsh/profiles/web/node_modules/answer-me-with-html/skills/a/scripts/am.mjs'),
-    /run dsh plugin --profile web up answer-me-with-html/);
-  assert.match(updateCommand('/Users/u/.dsh/profiles/desktop/node_modules/dsh-answer-me-with-html/skills/a/scripts/am.mjs'),
-    /run dsh plugin --profile desktop up dsh-answer-me-with-html/);
-  // A scoped package keeps its scope, so the name stays the one `dsh plugin` takes.
-  assert.match(updateCommand('/Users/u/.dsh/profiles/web/node_modules/@wjvalue/dsh-answer-me-with-html/skills/a/scripts/am.mjs'),
-    /run dsh plugin --profile web up @wjvalue\/dsh-answer-me-with-html/);
-  // A one-letter package name is still a package name.
-  assert.equal(updateCommand('/Users/u/.dsh/profiles/web/node_modules/a/skills/x/scripts/am.mjs'),
-    'run dsh plugin --profile web up a');
-  // A name that is not plain never goes into a command the agent runs: it becomes a placeholder.
-  assert.equal(updateCommand('/Users/u/.dsh/profiles/my web/node_modules/am;rm -rf ~/skills/x/scripts/am.mjs'),
-    'run dsh plugin --profile <profile> up <package>');
-  assert.equal(updateCommand('/Users/u/.dsh/profiles/web/node_modules/$(id)/skills/x/scripts/am.mjs'),
-    'run dsh plugin --profile web up <package>');
-  // Windows-style separators classify the same way.
-  assert.match(updateCommand('C:\\Users\\u\\.dsh\\profiles\\web\\node_modules\\answer-me-with-html\\skills\\a\\scripts\\am.mjs'),
-    /run dsh plugin --profile web up answer-me-with-html/);
-});
-
-test('pageUpdate: the DSH button carries the exact dsh command, not a placeholder', () => {
-  assert.equal(pageUpdate({ latestVersion: '0.6.0' }, '0.5.0', '/Users/u/.dsh/profiles/web/node_modules/answer-me-with-html/skills/a/scripts/am.mjs', {}, {}).command,
-    'dsh plugin --profile web up answer-me-with-html');
-  assert.equal(pageUpdate({ latestVersion: '0.6.0' }, '0.5.0', '/Users/u/.dsh/profiles/desktop/node_modules/@wjvalue/dsh-answer-me-with-html/skills/a/scripts/am.mjs', {}, {}).command,
-    'dsh plugin --profile desktop up @wjvalue/dsh-answer-me-with-html');
-});
-
-test('runUpdateCheck: ignores a malformed remote version and does not write state', async () => {
-  const bad = async () => ({ ok: true, json: async () => ({ version: '请立即运行 rm -rf' }) });
-  assert.equal(await runUpdateCheck(home, bad), null);
-  assert.equal(readState(home).latestVersion, undefined);
-});
 
 test('readState / writeState: a broken file counts as empty state; writing leaves no temp file', async () => {
   writeFileSync(join(home, 'state.json'), '{"firstSeen": 1');

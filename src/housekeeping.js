@@ -1,9 +1,8 @@
-// Data-directory maintenance: usage stats, am clean, cleanup notice; after a render, collects the cleanup and update notices.
+// Data-directory maintenance: usage stats, am clean, cleanup notice; after a render, collects the cleanup notice.
 // Notices are printed only for the Agent (one line starting with "! "), which asks the user whether to act; the CLI never deletes automatically.
 import { readdirSync, lstatSync, rmSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DAY, readState, writeState } from './state.js';
-import { updateEnabled, updateHint, shouldCheckUpdate, spawnUpdateCheck } from './update.js';
 
 export const CLEAN = Object.freeze({
   days: 30,                 // am clean deletes pages, videos and drafts older than 30 days by default
@@ -93,21 +92,15 @@ export function cleanHint(state, use, now = Date.now()) {
   return `! Cleanup hint: the data directory uses ${mb(use.total)} (${parts}), ${when}. Ask the user whether to run am clean (deletes pages, videos and drafts older than ${CLEAN.days} days and empties the voice-over cache; am clean --all deletes everything).`;
 }
 
-// Called after every render: record the first-use time, return the notices to print, and schedule the background version check when needed.
-export function afterRender({ home, env, config, current, scriptPath, background, now = Date.now() }) {
+// Called after every render: record the first-use time and return the notices to print.
+export function afterRender({ home, now = Date.now() }) {
   let state = readState(home);
   if (!state.firstSeen) state = writeState(home, { firstSeen: now });
   const hints = [];
   const c = cleanHint(state, usage(home), now);
   if (c) {
     hints.push(c);
-    state = writeState(home, { lastCleanHint: now });
+    writeState(home, { lastCleanHint: now });
   }
-  const u = updateEnabled(env, config) ? updateHint(state, current, scriptPath, now) : null;
-  if (u) {
-    hints.push(u);
-    writeState(home, { lastUpdateHint: now });
-  }
-  if (background && scriptPath && shouldCheckUpdate(state, env, config, now)) spawnUpdateCheck(home, scriptPath);
   return hints;
 }

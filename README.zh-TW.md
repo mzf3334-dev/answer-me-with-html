@@ -13,8 +13,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/doggy8088/answer-me-with-html/releases"><img src="https://img.shields.io/github/v/release/doggy8088/answer-me-with-html?style=flat-square&logo=github&labelColor=16181d&color=2ea44f" alt="Release"></a>
-  <a href="https://github.com/doggy8088/answer-me-with-html/stargazers"><img src="https://img.shields.io/github/stars/doggy8088/answer-me-with-html?style=flat-square&logo=github&labelColor=16181d&color=2ea44f" alt="Stars"></a>
+  <a href="https://github.com/mzf3334-dev/answer-me-with-html/releases"><img src="https://img.shields.io/github/v/release/mzf3334-dev/answer-me-with-html?style=flat-square&logo=github&labelColor=16181d&color=2ea44f" alt="Release"></a>
+  <a href="https://github.com/mzf3334-dev/answer-me-with-html/stargazers"><img src="https://img.shields.io/github/stars/mzf3334-dev/answer-me-with-html?style=flat-square&logo=github&labelColor=16181d&color=2ea44f" alt="Stars"></a>
   <img src="https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex%20%C2%B7%20Cursor%20%C2%B7%20OpenCode%20%C2%B7%20Pi%20%C2%B7%20DeepSeek%20Harness-2ea44f?style=flat-square&labelColor=16181d" alt="Works with Claude Code, Codex, Cursor, OpenCode, Pi, DeepSeek Harness">
   <a href="https://www.theagenticleaderboard.com/alternatives/answer-me-with-html/"><img src="https://www.theagenticleaderboard.com/badges/new/answer-me-with-html.svg" alt="The New 100"></a>
   <a href="https://ko-fi.com/yunqing_love"><img src="https://img.shields.io/badge/Ko--fi-support-ff5e5b?style=flat-square&logo=kofi&logoColor=white&labelColor=16181d" alt="Support on Ko-fi"></a>
@@ -67,7 +67,7 @@ https://github.com/user-attachments/assets/1f13b1fe-70a9-4c39-8530-b12e553e17ea
 
 <p align="center"><sub>同一個問題、同一個模型，兩種做法各答一遍，兩頁都能用。</sub></p>
 
-token 數存在 [bench/corpus/tokens.json](bench/corpus/tokens.json) 裡，執行 `node bench/corpus.mjs` 每次都得到同樣的數位。頁面本身可以[下載](https://github.com/doggy8088/answer-me-with-html/releases/download/v0.4.14/bench-corpus-2026-10-07.zip)。花費降得比 token 少，這裡約便宜 15%，因為每一輪都還要讀系統提示、你的問題和對話記錄，用不用 skill 都一樣。詳見[花費都花在哪](bench/README.md#where-the-cost-goes)。
+token 數存在 [bench/corpus/tokens.json](bench/corpus/tokens.json) 裡，執行 `node bench/corpus.mjs` 每次都得到同樣的數位。頁面本身可以[下載](https://github.com/mzf3334-dev/answer-me-with-html/releases/download/v0.4.14/bench-corpus-2026-10-07.zip)。花費降得比 token 少，這裡約便宜 15%，因為每一輪都還要讀系統提示、你的問題和對話記錄，用不用 skill 都一樣。詳見[花費都花在哪](bench/README.md#where-the-cost-goes)。
 
 解釋影片省得更多：在[一次小測試](bench/README.md#explainer-videos)裡，輸出 token 少約 18 倍，快約 12 倍。
 
@@ -79,16 +79,16 @@ token 數存在 [bench/corpus/tokens.json](bench/corpus/tokens.json) 裡，執�
 
 把下面這段話粘貼給你的 Agent。Claude Code、Codex、Cursor、OpenCode 都可以：
 
-> 幫我安裝 Answer me with HTML：讀 https://raw.githubusercontent.com/doggy8088/answer-me-with-html/main/INSTALL.md，照著做。
+> 幫我安裝 Answer me with HTML：讀 https://raw.githubusercontent.com/mzf3334-dev/answer-me-with-html/main/INSTALL.md，照著做。
 
-[INSTALL.md](INSTALL.md) 是寫給 Agent 看的。它在 Claude Code 裡裝外掛，在其他 Agent 裡裝 skill，已有安裝會保留，除非缺少 Node.js 或版本低於 20，否則全程不向你提問，用"TCP 三次握手"頁面驗證後給你一份彙報。如果你的 Agent 打不開連結，用 `npx -y skills add doggy8088/answer-me-with-html -g -y -a <你的 Agent 名>`（Claude Code 是 `-a claude-code`）。
+[INSTALL.md](INSTALL.md) 是寫給 Agent 看的。它在 Claude Code 裡裝外掛，在其他 Agent 裡裝 skill，已有安裝會保留，除非缺少 Node.js 或版本低於 20，否則全程不向你提問，用"TCP 三次握手"頁面驗證後給你一份彙報。如果你的 Agent 打不開連結，用 `npx -y skills add mzf3334-dev/answer-me-with-html -g -y -a <你的 Agent 名>`（Claude Code 是 `-a claude-code`）。
 
 ### Claude Code 外掛
 
 在 Claude Code 裡執行：
 
 ```
-/plugin marketplace add doggy8088/answer-me-with-html
+/plugin marketplace add mzf3334-dev/answer-me-with-html
 /plugin install answer-me-with-html@answer-me-with-html
 ```
 
@@ -97,13 +97,13 @@ token 數存在 [bench/corpus/tokens.json](bench/corpus/tokens.json) 裡，執�
 在終端裡執行。換成你在用的 profile，自帶的是 `web`：
 
 ```bash
-dsh plugin --profile web add github:doggy8088/answer-me-with-html
+dsh plugin --profile web add github:mzf3334-dev/answer-me-with-html
 ```
 
 ### 一條命令
 
 ```bash
-npx skills add doggy8088/answer-me-with-html
+npx skills add mzf3334-dev/answer-me-with-html
 ```
 
 它會問你裝到哪個 Agent。安裝器來自 [vercel-labs/skills](https://github.com/vercel-labs/skills)，支援 70 多種 Agent。
@@ -114,7 +114,7 @@ npx skills add doggy8088/answer-me-with-html
 把 `skills/answer-me-with-html` 這個目錄放進你的 Agent 的 skill 目錄就行。以 Claude Code 為例：
 
 ```bash
-git clone --depth 1 https://github.com/doggy8088/answer-me-with-html.git /tmp/answer-me-with-html
+git clone --depth 1 https://github.com/mzf3334-dev/answer-me-with-html.git /tmp/answer-me-with-html
 cp -R /tmp/answer-me-with-html/skills/answer-me-with-html ~/.claude/skills/answer-me-with-html
 ```
 
@@ -188,7 +188,7 @@ Server -> Client: SYN-ACK
 
 ## 更新與清理
 
-需要手動更新。使用時，CLI 最多每天在後台向 GitHub 查一次新版本；有新版本時，最多每三天向 Agent 提示一次，不會上傳任何內容。想更新，對 Agent 說"更新一下 answer-me-with-html"。頁面會堆在 `~/.answer-me-with-html/` 裡，說"清理一下頁面"，Agent 會先問你再刪。其他安裝方式和全部選項見[參考](docs/reference.zh-TW.md#更新與清理)。
+需要手動更新；這個分支不會檢查、下載或提示新版本，也不會上傳任何內容。想更新，對 Agent 說"更新一下 answer-me-with-html"。頁面會堆在 `~/.answer-me-with-html/` 裡，說"清理一下頁面"，Agent 會先問你再刪。其他安裝方式和全部選項見[參考](docs/reference.zh-TW.md#更新與清理)。
 
 ## 為什麼做這個
 
@@ -282,7 +282,7 @@ Agent 會按資訊的形狀挑元件：
 ## 開發
 
 ```bash
-git clone https://github.com/doggy8088/answer-me-with-html.git && cd answer-me-with-html
+git clone https://github.com/mzf3334-dev/answer-me-with-html.git && cd answer-me-with-html
 npm install
 npm test          # 跑測試
 AM_E2E=1 npm test # 連同影片端到端測試一起跑（需要系統 TTS、Chrome、ffmpeg）
@@ -304,15 +304,15 @@ npm run snapshot  # 與 origin/main 對比生成的 HTML（重構不能改變它
 - [LINUX DO](https://linux.do) 中文開發者論壇
 - [AtomGit](https://atomgit.com/weixin_43367137/answer-me-with-html)
 
-發現 bug 請提 [GitHub issue](https://github.com/doggy8088/answer-me-with-html/issues)。
+發現 bug 請提 [GitHub issue](https://github.com/mzf3334-dev/answer-me-with-html/issues)。
 
 ## Star 歷史
 
-<a href="https://star-history.com/#doggy8088/answer-me-with-html&Date">
+<a href="https://star-history.com/#mzf3334-dev/answer-me-with-html&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=doggy8088/answer-me-with-html&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=doggy8088/answer-me-with-html&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=doggy8088/answer-me-with-html&type=Date" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=mzf3334-dev/answer-me-with-html&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=mzf3334-dev/answer-me-with-html&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=mzf3334-dev/answer-me-with-html&type=Date" />
   </picture>
 </a>
 

@@ -206,7 +206,7 @@ am export page.html --pdf page.pdf --png out/
 ```
 
 - `--pdf`：按頁面自己的 `@media print` 規則印成 A4，保留背景色，不加頁眉頁腳。
-- `--png`：用螢幕媒體、1200 CSS px 寬、2 倍像素（2400 px）渲染，隱藏工具欄、回覆和批註按鈕、新版本提示等交互部件，再切成每張不超過 1800 CSS px 高的切片。切口落在面板之間的空隙裡；高過 1800 CSS px 的面板會按上限切開，文字可能分到兩張 PNG 裡。目錄不存在時會建立。再次匯出到同一目錄時，會刪掉這次沒有重新寫出的 `<頁面名>-<n>.png`，頁面變短後不會留下舊切片。其他檔案、其他名字和其他擴充名都保留。切片本身就是輸入頁面，或者刪不掉時，檔案留在原地，命令會報告。同一頁面不要同時往一個目錄匯出兩次，否則一次的清理可能刪掉另一次剛寫出的切片。
+- `--png`：用螢幕媒體、1200 CSS px 寬、2 倍像素（2400 px）渲染，隱藏工具欄、回覆和批註按鈕等交互部件，再切成每張不超過 1800 CSS px 高的切片。切口落在面板之間的空隙裡；高過 1800 CSS px 的面板會按上限切開，文字可能分到兩張 PNG 裡。目錄不存在時會建立。再次匯出到同一目錄時，會刪掉這次沒有重新寫出的 `<頁面名>-<n>.png`，頁面變短後不會留下舊切片。其他檔案、其他名字和其他擴充名都保留。切片本身就是輸入頁面，或者刪不掉時，檔案留在原地，命令會報告。同一頁面不要同時往一個目錄匯出兩次，否則一次的清理可能刪掉另一次剛寫出的切片。
 - 兩個參數至少要給一個。頁面必須是已存在的 `.html` 檔案。
 - 需要 Chrome / Chromium / Edge 和 Node.js 22 或更新版本（內建 `WebSocket`），和 `am video --mp4` / `--webm` 一樣；不在常見位置時用 `AM_CHROME` 指定。
 - PDF 或 PNG 是圖片：頁面上的回覆、批註、主題切換和 Before/After 切換在圖片裡都不能用。
@@ -355,13 +355,13 @@ am serve --tailscale  # 只監聽 Tailscale 地址；tailnet 內的任何設備�
 
 ## 更新與清理
 
-**更新**：需要手動更新，但有新版本時會提醒你。工具每天在後台向 GitHub 查詢一次最新版本號和這個版本的亮點，不上傳任何內容，也不會拖慢你要的頁面。有新版本時，下一次出頁面會附一行提示，Agent 會問你要不要更新。過時期間生成的每個頁面，工具欄最前面還會多一個「新版本」按鈕，點開能看到新版本最多 3 條亮點（跟頁面同一種語言）、更新命令和複製按鈕。用 `am serve --lan` 或 `--public-url` 分享給別的設備時，`am serve` 會把按鈕去掉；頁面本身也不聯網。關掉提醒：`/answer-me-with-html:config update_check off`。
+**更新**：需要手動更新。這個分支不會檢查、下載或提示新版本，頁面本身也不聯網。按安裝方式更新：
 
 | 安裝方式 | 更新方法 |
 | :--- | :--- |
 | `npx skills add` | `npx skills update answer-me-with-html -y`，或直接對 Agent 說"更新一下 answer-me-with-html" |
 | `git clone` + `npm link` | 在倉庫目錄執行 `git pull && npm install` |
-| DeepSeek Harness 外掛 | `dsh plugin --profile <profile> up <package>`；更新提示會自動填好 profile 和包名 |
+| DeepSeek Harness 外掛 | `dsh plugin --profile <profile> up <package>` |
 | Claude Code 外掛 | 終端執行 `claude plugin update answer-me-with-html@answer-me-with-html`（或在 `/plugin` → Installed 裡點 Update now），再 `/reload-plugins`。想自動更新，就在 `/plugin` → Marketplaces 裡給這個外掛市場打開自動更新。第三方外掛市場預設不自動更新 |
 
 **清理**：頁面、影片和配音快取都存在 `~/.answer-me-with-html/`。目錄超過 200 MB，或超過 20 MB 且 30 天沒清理過，Agent 會問你要不要清理，每週最多問一次。沒有你的同意，什麼都不會刪。
@@ -380,7 +380,6 @@ am serve --tailscale  # 只監聽 Tailscale 地址；tailnet 內的任何設備�
 | `mode` | `auto` | 預設明暗：`auto`、`light` 或 `dark` |
 | `style` | `80` | 寫作檢查：`off`、`80`（只提醒）或 `strict`（不達標不生成） |
 | `scale` | `1` | 頁面文字大小：0.8–1.5，步長 0.05。1.2 表示放大 20%；圖表跟著變大。工具欄的 A− / A+ 也能調整；選擇會記在這個瀏覽器裡，並優先於這個設定，但在 `am serve` 下只在當前標記頁內有效 |
-| `update_check` | `on` | 每天向 GitHub 查一次新版本並提醒你，不會自己更新 |
 | `close_after_reply` | `off` | 複製回覆後 3 秒關閉頁面標記頁，帶倒計時和「保持打開」按鈕。見下方說明 |
 | `colophon` | `on` | 在標題上方以 `yyyy-MM-dd HH:mm` 格式顯示本地生成時間。設為 `off` 後，之後生成或 patch 的頁面不再帶這一行；`generator` meta 標記保留 |
 | `voice` | `auto` | 影片配音：`auto`（有 `ELEVENLABS_API_KEY` 用 ElevenLabs，否則用系統語音）、`elevenlabs`、`local`、`system` 或 `off` |

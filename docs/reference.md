@@ -206,7 +206,7 @@ am export page.html --pdf page.pdf --png out/
 ```
 
 - `--pdf` prints with the page's own `@media print` rules on A4, with background colors and no header or footer.
-- `--png` renders in screen media at 1200 CSS px wide and 2x (2400 px), hides the interactive chrome (the toolbar, the reply and remark controls, the new-version notice) and cuts the page into slices no taller than 1800 CSS px. A cut falls in a gap between panels; a panel taller than 1800 CSS px is cut at the limit, so its text can span two PNG files. The folder is created when missing. A later export into the same folder removes `<page-name>-<n>.png` slices it did not write again, so a shorter page does not leave old slices behind. Other files, other names and other extensions stay. A slice that is the input page, or that cannot be removed, is left in place and the command reports it. Run one export of a page into a folder at a time: two at once can remove each other's slices.
+- `--png` renders in screen media at 1200 CSS px wide and 2x (2400 px), hides the interactive chrome (the toolbar and the reply and remark controls) and cuts the page into slices no taller than 1800 CSS px. A cut falls in a gap between panels; a panel taller than 1800 CSS px is cut at the limit, so its text can span two PNG files. The folder is created when missing. A later export into the same folder removes `<page-name>-<n>.png` slices it did not write again, so a shorter page does not leave old slices behind. Other files, other names and other extensions stay. A slice that is the input page, or that cannot be removed, is left in place and the command reports it. Run one export of a page into a folder at a time: two at once can remove each other's slices.
 - At least one flag is required. The page must be an existing `.html` file.
 - It needs Chrome / Chromium / Edge and Node.js 22 or later (built-in `WebSocket`), like `am video --mp4` / `--webm`; set `AM_CHROME` when the browser is not in a usual place.
 - A PDF or PNG is a picture: the page's reply, remarks, theme switch and Before/After switches do not work in it.
@@ -355,13 +355,13 @@ am serve --tailscale  # listen on your Tailscale address only; open the links fr
 
 ## Updating and cleaning up
 
-**Updating.** Updates are manual, and the tool tells you when one is out. Once a day, a background process downloads this project's `package.json` and `highlights.json` from GitHub to read the latest version number and its highlights. Nothing about you or your pages is sent, and the page you asked for never waits on it. When there is a newer version, the next render adds a one-line notice and the agent asks whether you want to update. Each page made while you are out of date also has a "New version" button at the start of the toolbar; click it for up to three highlights of the new version in the page language, the update command and a copy button. `am serve` takes the button out of a page it sends to another device (`--lan` or `--public-url`), and the page itself never goes online. Turn this off with `/answer-me-with-html:config update_check off`.
+**Updating.** Updates are manual. This fork never checks for, downloads or mentions a new version, and the page itself never goes online. Update with the command for your install:
 
 | Installed with | Update with |
 | :--- | :--- |
 | `npx skills add` | `npx skills update answer-me-with-html -y`, or tell your agent "update answer-me-with-html" |
 | `git clone` + `npm link` | `git pull && npm install` in the repository |
-| DeepSeek Harness plugin | `dsh plugin --profile <profile> up <package>`; the update notice fills in the profile and the package |
+| DeepSeek Harness plugin | `dsh plugin --profile <profile> up <package>` |
 | Claude Code plugin | In a terminal run `claude plugin update answer-me-with-html@answer-me-with-html` (or open `/plugin` → Installed → Update now), then `/reload-plugins`. To update automatically, turn on auto-update for this marketplace in `/plugin` → Marketplaces. Claude Code leaves it off for third-party marketplaces |
 
 **Cleaning up.** Pages, videos and the narration cache build up in `~/.answer-me-with-html/`. If that folder grows past 200 MB, or passes 20 MB with no cleanup for 30 days, the agent asks once a week whether to clean it. Nothing is deleted without your OK.
@@ -380,7 +380,6 @@ am serve --tailscale  # listen on your Tailscale address only; open the links fr
 | `mode` | `auto` | Default color mode: `auto`, `light` or `dark` |
 | `style` | `80` | Writing check: `off`, `80` (warn only) or `strict` (refuse to render) |
 | `scale` | `1` | Text size on the page: 0.8–1.5 in steps of 0.05. 1.2 makes text 20% larger; diagrams and charts grow with it. The toolbar's A− / A+ buttons change it too; the choice is remembered in this browser and wins over this setting, but under `am serve` it lasts for the tab only |
-| `update_check` | `on` | Check GitHub for a new version once a day and mention it. Never updates by itself |
 | `close_after_reply` | `off` | Close the page tab 3 seconds after you copy the reply, with a countdown and a Keep open button. See the note below |
 | `colophon` | `on` | Show the local generation date and time above the title, in `yyyy-MM-dd HH:mm` format. `off` leaves it out of pages made or patched afterwards; the `generator` meta tag stays |
 | `voice` | `auto` | Video narration: `auto` (ElevenLabs if `ELEVENLABS_API_KEY` is set, else system voice), `elevenlabs`, `local`, `system` or `off` |

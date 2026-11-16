@@ -13,6 +13,6 @@ Only the latest release of answer-me-with-html gets security fixes. Update to th
 
 Do not open a public issue for a security problem.
 
-Report it privately through GitHub: go to the repository's **Security** tab and choose **Report a vulnerability**, or open <https://github.com/doggy8088/answer-me-with-html/security/advisories/new>.
+Report it privately through GitHub: go to the repository's **Security** tab and choose **Report a vulnerability**, or open <https://github.com/mzf3334-dev/answer-me-with-html/security/advisories/new>.
 
 Include the version, the steps to reproduce the problem, and what an attacker can do with it.

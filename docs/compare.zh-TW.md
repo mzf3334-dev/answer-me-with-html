@@ -28,4 +28,4 @@
 - **不依賴宿主。** Agent 執行一條 shell 命令就行，不需要聊天應用來渲染。
 - **內容可信。** 程式碼塊引用你的真實檔案，寫作檢查讓句子保持簡短、直白。
 
-關於 Archify 和 dsh-genui 的資訊來自它們的 README，核對於 2026-10-07。如果這裡有過時的內容，歡迎[提 issue](https://github.com/doggy8088/answer-me-with-html/issues)。
+關於 Archify 和 dsh-genui 的資訊來自它們的 README，核對於 2026-10-07。如果這裡有過時的內容，歡迎[提 issue](https://github.com/mzf3334-dev/answer-me-with-html/issues)。

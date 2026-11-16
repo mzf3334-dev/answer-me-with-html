@@ -6,7 +6,7 @@ Numbers come straight from `claude -p --output-format json`: `modelUsage.outputT
 
 ## What the model writes (fixed)
 
-The corpus is the 9 hand-written HTML pages and the 9 Markdown drafts from the plain-setup run below. It is a [release download](https://github.com/doggy8088/answer-me-with-html/releases/download/v0.4.14/bench-corpus-2026-10-07.zip), kept out of git because plugin installs copy the whole repository. [count-tokens.mjs](count-tokens.mjs) counted their tokens with the model's own tokenizer (Claude Sonnet 5.5, no API key needed) and saved them in [corpus/tokens.json](corpus/tokens.json). To count again, unzip the download into `bench/corpus/` and run `node bench/count-tokens.mjs`. `node bench/corpus.mjs` reports them:
+The corpus is the 9 hand-written HTML pages and the 9 Markdown drafts from the plain-setup run below. It is a [release download](https://github.com/mzf3334-dev/answer-me-with-html/releases/download/v0.4.14/bench-corpus-2026-10-07.zip), kept out of git because plugin installs copy the whole repository. [count-tokens.mjs](count-tokens.mjs) counted their tokens with the model's own tokenizer (Claude Sonnet 5.5, no API key needed) and saved them in [corpus/tokens.json](corpus/tokens.json). To count again, unzip the download into `bench/corpus/` and run `node bench/count-tokens.mjs`. `node bench/corpus.mjs` reports them:
 
 | | Hand-written HTML | Markdown draft |
 | :--- | ---: | ---: |
@@ -112,7 +112,7 @@ Each run happens in a fresh temp folder. The "direct" runs may only use the Writ
 
 同一個問題、同一個模型，各出一頁。每格是 3 次執行的中位數（Claude Sonnet 5.5，2026-10-07）。上表即結果。
 
-- **模型要寫的 token（固定）：** 語料是下面普通環境那次執行的 9 頁手寫 HTML 和 9 份 Markdown 稿件，可以[下載](https://github.com/doggy8088/answer-me-with-html/releases/download/v0.4.14/bench-corpus-2026-10-07.zip)，不入庫。用模型自己的分詞器數過 token，結果存在 [corpus/tokens.json](corpus/tokens.json)。`node bench/corpus.mjs` 輸出：手寫 HTML 平均 4,893 個 token，其中 SVG 佔 47%、CSS 15%、標記 17%、正文 21%；稿件平均 612 個 token，少 8.0 倍。語料和計數都不變，這些數位就不變。
+- **模型要寫的 token（固定）：** 語料是下面普通環境那次執行的 9 頁手寫 HTML 和 9 份 Markdown 稿件，可以[下載](https://github.com/mzf3334-dev/answer-me-with-html/releases/download/v0.4.14/bench-corpus-2026-10-07.zip)，不入庫。用模型自己的分詞器數過 token，結果存在 [corpus/tokens.json](corpus/tokens.json)。`node bench/corpus.mjs` 輸出：手寫 HTML 平均 4,893 個 token，其中 SVG 佔 47%、CSS 15%、標記 17%、正文 21%；稿件平均 612 個 token，少 8.0 倍。語料和計數都不變，這些數位就不變。
 - **輸出 token 和耗時大幅下降：** 模型只寫簡短的 Markdown 稿件，CSS、版面和所有 SVG 座標都由 CLI 生成。
 - **普通環境**（`BENCH_LEAN=1`，每輪讀約 2.5 萬個 token 的上下文）：輸出 token 4,932 → 1,007（少 4.9 倍），耗時 31 秒 → 12 秒（快 2.6 倍），花費 $0.091 → $0.077（便宜 15%），9 次配對裡 skill 每次都更便宜。
 - **載入很重的環境**（我們自己的 Claude Code 組態，每輪讀約 8.6 萬個 token）：輸出 token 7,656 → 1,070（少 7.2 倍），耗時 50 秒 → 14 秒（快 3.5 倍），花費 $0.220 → $0.138（便宜 37%），9 次裡 8 次更便宜。這裡花費主要看快取：18 次裡有 7 次快取沒命中，整段上下文被重新寫入，單次花費 $0.28–0.54。2026-10-02 那次測到 skill 貴約 20%，但那次沒有記錄快取資料，無法判斷有幾次沒命中。

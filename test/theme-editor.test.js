@@ -141,7 +141,7 @@ test('submitPlan: the issue form link carries the name and the compact JSON', ()
   const plan = M.submitPlan('my-comic', data);
   assert.equal(plan.paste, false);
   const url = new URL(plan.url);
-  assert.equal(url.origin + url.pathname, 'https://github.com/doggy8088/answer-me-with-html/issues/new');
+  assert.equal(url.origin + url.pathname, 'https://github.com/mzf3334-dev/answer-me-with-html/issues/new');
   assert.equal(url.searchParams.get('template'), 'theme.yml');
   assert.equal(url.searchParams.get('title'), 'Theme: my-comic');
   assert.equal(url.searchParams.get('name'), 'my-comic');
@@ -181,10 +181,10 @@ test('fetchIssue: reads the name and the theme of an issue with the parser the A
   const calls = [];
   const fetchFn = async (url, init) => {
     calls.push([url, init]);
-    return reply(200, { title: 'Theme: my-comic', html_url: 'https://github.com/doggy8088/answer-me-with-html/issues/12', body: body('my-comic', JSON.stringify(COMIC)) });
+    return reply(200, { title: 'Theme: my-comic', html_url: 'https://github.com/mzf3334-dev/answer-me-with-html/issues/12', body: body('my-comic', JSON.stringify(COMIC)) });
   };
   const result = await M.fetchIssue('12', fetchFn);
-  assert.deepEqual(calls.map((c) => c[0]), ['https://api.github.com/repos/doggy8088/answer-me-with-html/issues/12']);
+  assert.deepEqual(calls.map((c) => c[0]), ['https://api.github.com/repos/mzf3334-dev/answer-me-with-html/issues/12']);
   assert.equal(calls[0][1].headers.accept, 'application/vnd.github+json');
   assert.equal(result.ok, true);
   assert.equal(result.name, 'my-comic');

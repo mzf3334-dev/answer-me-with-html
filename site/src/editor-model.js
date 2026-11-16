@@ -7,7 +7,7 @@ import { parseColor } from '../../src/themes/color.js';
 import { catalogProblems, MAX_NAME } from '../../src/themes/catalog-rules.js';
 import { parseIssue } from '../../src/themes/submission-issue.js';
 
-export const REPO = 'doggy8088/answer-me-with-html';
+export const REPO = 'mzf3334-dev/answer-me-with-html';
 // A browser or GitHub refuses a very long address, so the theme goes into the link only when the whole link is at most this long.
 export const MAX_URL = 8000;
 // The editor reads at most this much of a file. The catalog takes 16 KB (catalogProblems says so for a file between the two).

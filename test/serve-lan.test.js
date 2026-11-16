@@ -5,7 +5,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { lanIPv4Addresses, publicUrlOrigin, pageLink, pageToken, startServer, readServeInfo, ServeError, withLiveReload, eventLink } from '../src/serve.js';
-import { renderDoc, withoutUpdateNotice } from '../src/render.js';
+import { renderDoc } from '../src/render.js';
 
 function fetch(port, path, host) {
   return new Promise((resolve, reject) => {
@@ -207,11 +207,10 @@ function body(port, path, host) {
   });
 }
 
-test('a page goes to a LAN or public address without its new-version button, and to this computer with it', async () => {
-  const home = mkdtempSync(join(tmpdir(), 'am-lan-update-'));
+test('a page reaches a LAN or public address with the same markup as this computer', async () => {
+  const home = mkdtempSync(join(tmpdir(), 'am-lan-page-'));
   mkdirSync(join(home, 'pages'));
-  const update = { latest: '0.9.0', current: '0.5.0', command: 'npx skills update answer-me-with-html -y' };
-  const page = renderDoc('## A\nx', {}, {}, { update }).html;
+  const page = renderDoc('## A\nx').html;
   writeFileSync(join(home, 'pages', 'test.html'), page);
   let srv;
   try {
@@ -221,11 +220,8 @@ test('a page goes to a LAN or public address without its new-version button, and
     const served = (html) => withLiveReload(html, eventLink(srv, 'test.html'), {
       save: `/r/${pageToken(srv.secret, 'pages', 'test.html')}/test.html`,
     });
-    for (const host of ['127.0.0.1:' + srv.port, 'localhost']) assert.equal(await body(srv.port, path, host), served(page), host);
-    for (const host of ['192.168.8.20:' + srv.port, 'render.example']) {
-      const shared = await body(srv.port, path, host);
-      assert.equal(shared, served(withoutUpdateNotice(page)), host);
-      assert.doesNotMatch(shared, /<button[^>]*data-am="(update|copy-text)"|id="am-update"/, host);
+    for (const host of ['127.0.0.1:' + srv.port, 'localhost', '192.168.8.20:' + srv.port, 'render.example']) {
+      assert.equal(await body(srv.port, path, host), served(page), host);
     }
   } finally {
     if (srv) await srv.close();

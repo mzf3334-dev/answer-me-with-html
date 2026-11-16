@@ -14,7 +14,6 @@ import { readFileSync, writeFileSync, renameSync, rmSync, mkdirSync, watch, lsta
 import { lstat, realpath, readFile, stat } from 'node:fs/promises';
 import { join, resolve, dirname, basename, sep } from 'node:path';
 import { ensureHome } from './home.js';
-import { withoutUpdateNotice } from './render.js';
 import { resolveLanguage } from './language.js';
 import { readPage } from './page.js';
 import { esc } from './svg/text.js';
@@ -597,9 +596,7 @@ function handler(home, secret, allowedHosts, live) {
       if (dest !== undefined && dest !== 'document') return notFound(req, res);
       const real = await resolvePage(home, dir, file);
       if (!real) return notFound(req, res);
-      // The new-version button is for the person who made the page: a reader through a LAN or public address gets the page without it.
-      const html = await readFile(real);
-      const page = LOOPBACK_HOST.test(req.headers.host) ? html.toString('utf8') : withoutUpdateNotice(html.toString('utf8'));
+      const page = (await readFile(real)).toString('utf8');
       const body = dir === 'pages'
         ? withLiveReload(page, eventLink({ secret }, file), {
           save: `/${SAVE}/${token}/${encodeURIComponent(file)}`,

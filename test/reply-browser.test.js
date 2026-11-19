@@ -3,7 +3,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawn } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync, writeFileSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -145,6 +145,141 @@ test('reply: picks and comments become one reply, and both survive a reload', { 
     open: !document.querySelector('#panel-C .am-comment').hidden,
   })`);
   assert.deepEqual(after, { memcached: true, comment: 'Make the TTL a setting.', open: true });
+});
+
+test('reply JSON: export writes the answers and comments to a file another page can import', { skip: SKIP }, async () => {
+  await load();
+  const downloads = join(tmp, 'downloads');
+  mkdirSync(downloads, { recursive: true });
+  await cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads });
+  const label = await evaluate(`(() => {
+    document.querySelector('input[value=Memcached]').click();
+    document.querySelector('#panel-C .am-comment-btn').click();
+    const box = document.querySelector('#panel-C .am-comment textarea');
+    box.value = 'Make the TTL a setting.';
+    box.dispatchEvent(new Event('input'));
+    for (const [id, value] of [['department', 'IT'], ['staff', 'Alice']]) {
+      const field = document.querySelector('[data-am-id="' + id + '"]');
+      field.value = value;
+      field.dispatchEvent(new Event('input'));
+    }
+    document.querySelector('[data-am="reply"]').click();
+    document.querySelector('dialog.am-reply [data-act="export"]').click();
+    return document.querySelector('dialog.am-reply [data-act="export"]').textContent;
+  })()`);
+  assert.equal(label, 'Exported ✓');
+  const name = () => readdirSync(downloads).find((entry) => /^page_IT_Alice_\d{14}\.json$/.test(entry));
+  for (const end = Date.now() + 5000; !name() && Date.now() < end;) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  assert.match(name() ?? '', /^page_IT_Alice_\d{14}\.json$/, 'the name is {HTML}_{department}_{staff}_{timestamp}.json');
+  const data = JSON.parse(readFileSync(join(downloads, name()), 'utf8'));
+  assert.equal(data.format, 'answer-me-with-html.reply');
+  assert.equal(data.version, 1);
+  assert.deepEqual(data.submittedBy, { department: 'IT', staffName: 'Alice' });
+  assert.equal(data.page.title, 'Cache for the session store');
+  assert.deepEqual(data.answers.find((a) => a.question === 'Which cache do we use?'),
+    { panel: 'A', question: 'Which cache do we use?', picked: ['Memcached'], touched: true });
+  assert.deepEqual(data.comments, [{ panel: 'C', title: 'Where the change goes', text: 'Make the TTL a setting.' }]);
+});
+
+test('reply JSON: export waits for a department and staff name', { skip: SKIP }, async () => {
+  await load();
+  await evaluate('localStorage.clear()');
+  await load();
+  const downloads = join(tmp, 'downloads-empty');
+  mkdirSync(downloads, { recursive: true });
+  await cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads });
+  const state = await evaluate(`(() => {
+    document.querySelector('[data-am="reply"]').click();
+    document.querySelector('dialog.am-reply [data-act="export"]').click();
+    return {
+      status: document.querySelector('.am-reply-status').textContent,
+      focused: document.activeElement?.dataset?.amId ?? '',
+      sheet: document.querySelector('dialog.am-reply').open,
+    };
+  })()`);
+  assert.deepEqual(state, { status: 'Enter the department and staff name first', focused: 'department', sheet: true });
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  assert.deepEqual(readdirSync(downloads), [], 'no file is written without a name');
+  // The bottom bar's export goes through the same check and opens the sheet on the empty field.
+  const fromBar = await evaluate(`(() => {
+    document.querySelector('dialog.am-reply').close();
+    document.querySelector('#panel-C .am-comment-btn').click();
+    const box = document.querySelector('#panel-C .am-comment textarea');
+    box.value = 'A comment.';
+    box.dispatchEvent(new Event('input'));
+    [...document.querySelectorAll('.am-reply-bar .am-btn')].find((b) => b.textContent === 'Export JSON').click();
+    return {
+      status: document.querySelector('.am-reply-status').textContent,
+      focused: document.activeElement?.dataset?.amId ?? '',
+      sheet: document.querySelector('dialog.am-reply').open,
+    };
+  })()`);
+  assert.deepEqual(fromBar, state);
+  assert.deepEqual(readdirSync(downloads), [], 'the bar writes no file without a name');
+});
+
+test('reply JSON: a second Export click inside the Exported moment still comes back to its label', { skip: SKIP }, async () => {
+  await load();
+  const downloads = join(tmp, 'downloads-twice');
+  mkdirSync(downloads, { recursive: true });
+  await cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads });
+  const during = await evaluate(`(async () => {
+    document.querySelector('[data-am="reply"]').click();
+    for (const [id, value] of [['department', 'IT'], ['staff', 'Alice']]) {
+      const field = document.querySelector('[data-am-id="' + id + '"]');
+      field.value = value;
+      field.dispatchEvent(new Event('input'));
+    }
+    const btn = document.querySelector('dialog.am-reply [data-act="export"]');
+    btn.click();
+    await new Promise((r) => setTimeout(r, 300));
+    btn.click();
+    return btn.textContent;
+  })()`);
+  assert.equal(during, 'Exported ✓');
+  await new Promise((resolve) => setTimeout(resolve, 1600));
+  assert.equal(await evaluate("document.querySelector('dialog.am-reply [data-act=\"export\"]').textContent"), 'Export JSON');
+});
+
+test('reply JSON: import fills comments and answers, and a bad file changes nothing', { skip: SKIP }, async () => {
+  await load();
+  const good = join(tmp, 'import.json');
+  writeFileSync(good, JSON.stringify({
+    format: 'answer-me-with-html.reply', version: 1,
+    page: { title: 'Cache for the session store', file: '' }, exportedAt: '2026-11-19T00:00:00.000Z',
+    submittedBy: { department: 'OPS', staffName: 'Bob' },
+    answers: [{ panel: 'A', question: 'Which cache do we use?', picked: ['Redis'], touched: true }],
+    comments: [{ panel: 'C', title: 'Where the change goes', text: 'Imported comment.' }],
+    remarks: [],
+  }));
+  await evaluate("document.querySelector('[data-am=\"reply\"]').click()");
+  const input = await send('Runtime.evaluate', { expression: "document.querySelector('dialog.am-reply .am-reply-file')" });
+  await send('DOM.setFileInputFiles', { files: [good], objectId: input.result.objectId });
+  await until(`document.querySelector('dialog.am-reply .am-reply-status').textContent === ${JSON.stringify('Imported 2')}`);
+  assert.equal(await evaluate("document.querySelector('dialog.am-reply .am-reply-status').textContent"), 'Imported 2');
+  assert.deepEqual(await evaluate(`({
+    comment: document.querySelector('#panel-C .am-comment textarea').value,
+    open: !document.querySelector('#panel-C .am-comment').hidden,
+    redis: document.querySelector('input[value="Redis"]').checked,
+    memcached: document.querySelector('input[value="Memcached"]').checked,
+  })`), { comment: 'Imported comment.', open: true, redis: true, memcached: false });
+  assert.deepEqual(await evaluate(`({
+    department: document.querySelector('[data-am-id="department"]').value,
+    staff: document.querySelector('[data-am-id="staff"]').value,
+  })`), { department: 'OPS', staff: 'Bob' });
+  // A file that is not reply data reports the failure and leaves the imported values in place.
+  const bad = join(tmp, 'bad.json');
+  writeFileSync(bad, JSON.stringify({ hello: 'world' }));
+  const input2 = await send('Runtime.evaluate', { expression: "document.querySelector('dialog.am-reply .am-reply-file')" });
+  await send('DOM.setFileInputFiles', { files: [bad], objectId: input2.result.objectId });
+  await until(`document.querySelector('dialog.am-reply .am-reply-status').textContent === ${JSON.stringify('Could not import: not a reply data file')}`);
+  assert.equal(await evaluate("document.querySelector('#panel-C .am-comment textarea').value"), 'Imported comment.');
+  // The imported identity is saved like the comment, so it is still there after a reload.
+  await load();
+  assert.equal(await evaluate("document.querySelector('[data-am-id=\"department\"]').value"), 'OPS');
+  assert.equal(await evaluate("document.querySelector('[data-am-id=\"staff\"]').value"), 'Bob');
 });
 
 test('reply: an untouched answer saved by an older page, which preselected the suggestion, comes back unselected', { skip: SKIP }, async () => {

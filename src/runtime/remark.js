@@ -345,14 +345,29 @@
   }, true);
   setMode(false);
 
-  // What the Reply button reads: the marked blocks that are on the page, in page order.
+  // What the Reply button reads: the marked blocks that are on the page, in page order. The key lets an imported JSON
+  // file put a mark back on the same block after the reader sends it to another copy of the page.
   window.__amRemarkData = () => {
     if (!marks.size) return [];
     const live = [];
     for (const [el, key] of keyMap()) {
       const mark = marks.get(key);
-      if (mark) live.push({ panel: panelOf(el), quote: quote(blockText(el)), kind: mark.kind, note: mark.note });
+      if (mark) live.push({ key, panel: panelOf(el), quote: quote(blockText(el)), kind: mark.kind, note: mark.note });
     }
     return live;
+  };
+  // What an imported reply file puts back: saved marks merge into the page and are painted on the blocks they name.
+  window.__amRemarkImport = (list) => {
+    if (!Array.isArray(list)) return 0;
+    let n = 0;
+    for (const mark of list.slice(0, 100)) {
+      if (typeof mark?.key !== 'string' || !KINDS.includes(mark.kind)) continue;
+      marks.set(mark.key, { key: mark.key, kind: mark.kind, note: typeof mark.note === 'string' ? mark.note.slice(0, 10000) : '' });
+      n++;
+    }
+    if (!n) return 0;
+    for (const [el, key] of keyMap()) if (marks.has(key)) paint(el, marks.get(key));
+    save();
+    return n;
   };
 })();

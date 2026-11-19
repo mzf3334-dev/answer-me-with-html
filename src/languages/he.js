@@ -28,6 +28,8 @@ export default {
       confirmed: 'ההמלצה אושרה', untouched: 'לא נענה; מומלץ', was: 'היה',
       typed: 'שורות שמתחילות ב-">" הן טקסט שהקורא הקליד.',
       raw: 'הצגת הטקסט שיועתק', preview: 'תצוגה מקדימה',
+      exportJson: 'ייצוא JSON', importJson: 'ייבוא JSON', exported: 'יוצא ✓', imported: 'יובאו {n} פריטים', importFailed: 'הייבוא נכשל: הקובץ אינו קובץ נתוני תגובה',
+      department: 'מחלקה', staffName: 'שם העובד', idRequired: 'יש להזין קודם מחלקה ושם עובד',
       count: { answered: 'נענו: {n}', comments: 'הערות: {n}', remarks: 'סימונים: {n}' },
     },
     closeAfter: { closing: 'הלשונית תיסגר בעוד {n} שניות', keep: 'להשאיר פתוחה', closeFailed: 'התגובה הועתקה. אפשר לסגור את הלשונית.' },

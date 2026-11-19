@@ -289,7 +289,7 @@ ${cspMeta([script], { live: true })}
 ${pageCss(embedded, { diff: body.includes('class="am-codeblock am-codeblock--diff"'), delta: hasDelta(body), rtl: language.dir === 'rtl', math: hasMath(body), chart: hasChart(body), table: interactiveTable, closeAfter, scale })}
 </style>
 </head>
-<body>
+<body${meta.file ? ` data-am-file="${esc(meta.file)}"` : ''}>
 <div class="am-toolbar"${rootCarrierAttrs(root)}>
 ${pick('theme', ui.theme, embedded.map((t) => [t.name, t.label[labelKey]]), meta.theme)}
 ${pick('mode', ui.modeLabel, Object.entries(ui.mode), meta.mode)}

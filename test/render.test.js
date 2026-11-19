@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import { renderDoc, RenderError, timestamp } from '../src/render.js';
 import { ParseError } from '../src/parse.js';
 import { getTheme } from '../src/themes/registry.js';
+import { parseColor } from '../src/themes/color.js';
 import { COMPONENTS } from '../src/components/index.js';
 import { md } from '../src/markdown.js';
 
@@ -79,6 +80,21 @@ test('render: flow / sequence SVG styles have fallbacks when the theme context i
       else assert.ok(defaults[name]?.includes(fallback), `${selector} ${name} fallback ${fallback} is not its documented default`);
     }
   }
+});
+
+test('remark keep: the mark is green, not the blueprint blue that --ok carries', () => {
+  const { light, dark } = getTheme('blueprint').tokens;
+  const green = (value) => {
+    const color = parseColor(value);
+    return color && color[1] > color[0] && color[1] > color[2];
+  };
+  for (const [mode, tokens] of [['light', light], ['dark', dark]]) {
+    assert.ok(green(tokens['--keep']), `${mode} --keep is green`);
+    assert.ok(parseColor(tokens['--keep-bg']), `${mode} --keep-bg is a color`);
+  }
+  const base = readFileSync(new URL('../src/themes/base.css', import.meta.url), 'utf8');
+  assert.match(base, /\[data-kind="keep"\] \{ --mark: var\(--keep, var\(--ok\)\); --mark-bg: var\(--keep-bg, var\(--ok-bg\)\); \}/,
+    'a theme can set green keep tokens; other themes fall back to their ok color');
 });
 
 test('render: panel ID, title, meta and span take effect', () => {

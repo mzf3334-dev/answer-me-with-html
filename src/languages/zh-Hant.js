@@ -29,6 +29,8 @@ export default {
       confirmed: '確認了建議', untouched: '未作答，建議', was: '原為',
       typed: '以 ">" 開頭的行是讀者輸入的文字。',
       raw: '查看將複製的文字', preview: '預覽',
+      exportJson: '匯出 JSON', importJson: '匯入 JSON', exported: '已匯出 ✓', imported: '已匯入 {n} 項', importFailed: '匯入失敗：不是回覆資料檔',
+      department: '部門', staffName: '姓名', idRequired: '請先輸入部門和姓名',
       count: { answered: '已作答 {n} 項', comments: '評論 {n} 則', remarks: '標註 {n} 處' },
     },
     closeAfter: { closing: '{n} 秒後關閉此分頁', keep: '保持開啟', closeFailed: '回覆已複製，現在可以關閉此分頁。' },

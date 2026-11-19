@@ -13,6 +13,7 @@ export default {
       '--line': '#1d2026', '--line-2': '#d6dae1', '--fill': '#f3f5f8',
       '--accent': '#1d5fbf', '--accent-bg': '#e4ecf8',
       '--ok': '#1d5fbf', '--ok-bg': '#e4ecf8', '--err': '#c62828', '--err-bg': '#fbeaea',
+      '--keep': '#1f7a3a', '--keep-bg': '#e6f2e9',
       '--warn': '#a8620a', '--warn-bg': '#fdf3e2', '--head-bg': '#16181d', '--head-fg': '#ffffff',
     },
     dark: {
@@ -20,6 +21,7 @@ export default {
       '--line': '#c9d6e8', '--line-2': '#23385a', '--fill': '#12253f',
       '--accent': '#6ea8ff', '--accent-bg': '#16305a',
       '--ok': '#6ea8ff', '--ok-bg': '#16305a', '--err': '#ff7070', '--err-bg': '#3b1620',
+      '--keep': '#7acb8b', '--keep-bg': '#12301e',
       '--warn': '#f0b14a', '--warn-bg': '#3a2a10', '--head-bg': '#e6edf7', '--head-fg': '#081322',
     },
   },

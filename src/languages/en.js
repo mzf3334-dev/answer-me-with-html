@@ -22,6 +22,8 @@ export default {
       confirmed: 'suggestion confirmed', untouched: 'not answered; suggested', was: 'was',
       typed: 'Lines that start with ">" are text the reader typed.',
       raw: 'Show the text that gets copied', preview: 'Preview',
+      exportJson: 'Export JSON', importJson: 'Import JSON', exported: 'Exported ✓', imported: 'Imported {n}', importFailed: 'Could not import: not a reply data file',
+      department: 'Department', staffName: 'Staff name', idRequired: 'Enter the department and staff name first',
       count: { answered: 'Answered: {n}', comments: 'Comments: {n}', remarks: 'Remarks: {n}' },
     },
     closeAfter: { closing: 'Closing this tab in {n}s', keep: 'Keep open', closeFailed: 'Reply copied. You can close this tab now.' },

@@ -102,6 +102,8 @@ test('reply: every language labels the raw fold, the preview button and the bar 
     assert.equal(typeof labels.reply.raw, 'string', `${id} raw`);
     assert.equal(typeof labels.reply.preview, 'string', `${id} preview`);
     for (const kind of ['answered', 'comments', 'remarks']) assert.ok(labels.reply.count[kind].includes('{n}'), `${id} count.${kind}`);
+    for (const key of ['exportJson', 'importJson', 'exported', 'importFailed', 'department', 'staffName', 'idRequired']) assert.equal(typeof labels.reply[key], 'string', `${id} ${key}`);
+    assert.ok(labels.reply.imported.includes('{n}'), `${id} imported count`);
   }
 });
 

@@ -143,8 +143,19 @@ code, pre, kbd { font-family: var(--font-mono); }
 .am-reply::backdrop { background: rgba(0,0,0,.35); }
 .am-reply-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-bottom: 10px; }
 .am-reply-head span { color: var(--ink-2); font-size: var(--am-fs-text); }
+/* Who sends the reply: the export filename carries both, so they sit above the reply itself. */
+.am-reply-id { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 10px 0 2px; }
+.am-reply-field { display: flex; flex: 1 1 180px; align-items: center; gap: 6px; min-width: 0; color: var(--ink-2); font-size: var(--am-fs-text); }
+.am-reply-field span { flex: none; }
+.am-reply-field input {
+  flex: 1 1 auto; min-width: 0; font: var(--am-fs-text)/1.4 var(--font-sans); color: var(--ink); background: var(--paper);
+  border: 1px solid var(--line-2); border-radius: var(--radius); padding: 5px 8px;
+}
+.am-reply-field input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .am-reply textarea { font-family: var(--font-mono); font-size: var(--am-fs-code); }
-.am-reply-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.am-reply-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 10px; }
+.am-reply-status { flex: 1 1 auto; min-width: 0; color: var(--ink-2); font-size: var(--am-fs-small); }
+.am-reply-status:empty { min-height: 1em; }
 .am-reply .am-btn:disabled { opacity: .5; cursor: default; }
 /* The sheet shows the reply drawn (src/runtime/reply-view.js), each line in its own direction; the Markdown that Copy copies sits under a fold. */
 .am-reply-view {
@@ -575,7 +586,8 @@ body.am-has-reply-bar { padding-block-end: 72px; }
 [data-am-pick]:focus { outline: none; }
 [data-am-pick]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 :is(.am-mark, .am-remark-kind)[data-kind="suggestion"] { --mark: var(--warn); --mark-bg: var(--warn-bg); }
-:is(.am-mark, .am-remark-kind)[data-kind="keep"] { --mark: var(--ok); --mark-bg: var(--ok-bg); }
+/* Keep reads green on every theme: the theme may give --keep its own greens; without them, its ok color (green in most themes) applies. */
+:is(.am-mark, .am-remark-kind)[data-kind="keep"] { --mark: var(--keep, var(--ok)); --mark-bg: var(--keep-bg, var(--ok-bg)); }
 :is(.am-mark, .am-remark-kind)[data-kind="question"] { --mark: var(--accent); --mark-bg: var(--accent-bg); }
 :is(.am-mark, .am-remark-kind)[data-kind="concern"] { --mark: var(--err); --mark-bg: var(--err-bg); }
 .am-mark { border-inline-start: 3px solid var(--mark); padding-inline-start: 10px; background: var(--mark-bg); border-radius: 1px; }

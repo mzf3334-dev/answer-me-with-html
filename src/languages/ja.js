@@ -30,6 +30,8 @@ export default {
       confirmed: '推奨を確認', untouched: '未回答、推奨', was: '変更前',
       typed: '「>」で始まる行は読者が入力した文字です。',
       raw: 'コピーされるテキストを表示', preview: 'プレビュー',
+      exportJson: 'JSON をエクスポート', importJson: 'JSON をインポート', exported: 'エクスポートしました ✓', imported: '{n} 件をインポートしました', importFailed: 'インポートできません：返信データファイルではありません',
+      department: '部署', staffName: '氏名', idRequired: '先に部署と氏名を入力してください',
       count: { answered: '回答済み {n} 件', comments: 'コメント {n} 件', remarks: '注記 {n} 件' },
     },
     closeAfter: { closing: '{n} 秒後にこのタブを閉じます', keep: '開いたままにする', closeFailed: '返信をコピーしました。このタブを閉じて構いません。' },

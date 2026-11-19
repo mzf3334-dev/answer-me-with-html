@@ -24,6 +24,8 @@ export default {
       confirmed: '确认了建议', untouched: '未作答，建议', was: '原为',
       typed: '以 ">" 开头的行是读者输入的文字。',
       raw: '查看将复制的文本', preview: '预览',
+      exportJson: '导出 JSON', importJson: '导入 JSON', exported: '已导出 ✓', imported: '已导入 {n} 项', importFailed: '导入失败：不是回复数据文件',
+      department: '部门', staffName: '姓名', idRequired: '请先输入部门和姓名',
       count: { answered: '已作答 {n} 项', comments: '评论 {n} 条', remarks: '标注 {n} 处' },
     },
     closeAfter: { closing: '{n} 秒后关闭此标签页', keep: '保持打开', closeFailed: '回复已复制，现在可以关闭此标签页。' },
